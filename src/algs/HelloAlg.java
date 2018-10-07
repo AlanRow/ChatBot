@@ -24,6 +24,8 @@ public class HelloAlg implements Algorithm
 	}
 
 	public String generateMessage() {
+		if (!readyToGreet)
+			return "";
 		readyToGreet = false;
 		String answer = (isGreeted) ? "We have greeted, yet." : "Hello!";
 		isGreeted = true;
