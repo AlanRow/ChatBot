@@ -1,10 +1,9 @@
 package bot_interfaces;
 
-public interface DataReader 
-{
-	public boolean areNewData();
-	
-	public String[] getNewData();
-	
-	public String[] getAllData();
+import java.util.List;
+import java.util.Map;
+
+public interface DataReader {
+
+	public Map<String, List<String>> getAllData();
 }

@@ -1,10 +1,10 @@
-package tests;
+package Tests;
+
+import static org.junit.jupiter.api.Assertions.*;
+
 
 import algs.HelloAlg;
 import bot_interfaces.*;
-
-import static org.junit.Assert.assertEquals;
-
 import org.junit.jupiter.api.Test;
 
 class HelloAlgTest {
