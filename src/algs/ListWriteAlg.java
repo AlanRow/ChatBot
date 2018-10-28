@@ -5,6 +5,7 @@ import java.util.List;
 
 import bot_interfaces.Algorithm;
 import bot_interfaces.DataCorrector;
+import exceptions.UnfoundedDataException;
 
 public class ListWriteAlg implements Algorithm {
 	private DataCorrector listWriter;
@@ -12,6 +13,8 @@ public class ListWriteAlg implements Algorithm {
 	private boolean willCome;
 	private boolean isReady;
 	private boolean isTautology;
+	private boolean haveUnsolvedExceptions;
+	private String answer;
 	
 	private List userList;
 
@@ -22,31 +25,48 @@ public class ListWriteAlg implements Algorithm {
 	}
 	
 	public void readMessage(String message) {
+		if (haveUnsolvedExceptions)
+			return;
+		
 		isReady = true;
-		switch (message.toLowerCase())
-		{
-			case "я приду":
-				if (!willCome)
-				{
-					listWriter.writeData(user, "will");
-					willCome = true;
-				}
-				else
-					isTautology = true;
-				break;
-			case "я не приду":
-				if (willCome)
-				{
-					listWriter.removeData(user, "will");
-					willCome = false;
-				}
-				else
-					isTautology = true;
-				break;
-			default:
-				isReady = false;
-				break;
+		try {
+			switch (message.toLowerCase())
+			{
+				case "я приду":
+					if (!willCome)
+					{
+						listWriter.writeData(user, "will");
+						willCome = true;
+						answer = "Хорошо, я вас записал.";
+					}
+					else
+						answer = "Да, я так и понял.";
+					break;
+				case "я не приду":
+					if (willCome)
+					{
+						willCome = false;
+						try {
+							listWriter.removeData(user, "will");
+							answer = "Хорошо, я вас вычеркнул.";
+						}
+						catch (UnfoundedDataException ex) {
+							answer = "Странно, вас не было в списке...";
+						}
+					}
+					else
+						answer = "Да, я так и понял.";
+					break;
+				default:
+					isReady = false;
+					break;
+			}
+		} 
+		catch (IOException ex) {
+			haveUnsolvedExceptions = true;
+			answer = "Простие, допущена ошибка в работе с фалами.";
 		}
+		
 	}
 
 	public boolean isReadyToGenerate() {
@@ -54,7 +74,8 @@ public class ListWriteAlg implements Algorithm {
 	}
 
 	public String generateMessage() {
-		return (isTautology) ? "Да, я так и понял." : (willCome) ? "Хорошо, я вас записал." : "Хорошо, я вас вычеркнул.";
+		isReady = false;
+		return answer;
 	}
 	
 	

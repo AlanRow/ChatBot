@@ -1,8 +1,11 @@
 package dataManagers;
 
 import bot_interfaces.DataCorrector;
+import bot_interfaces.DataReader;
 import bot_interfaces.DataSearcher;
 import bot_interfaces.DataWriter;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -21,14 +24,13 @@ public class VirtualDataManager implements DataCorrector, DataSearcher{
 	//используется для сохранения информации
 	private DataWriter dataSaver;
 	//используется лишь при создании класса для подгрузки информации. Вообще говоря может быть отличен от сохраняемого.
-	private DataSearcher dataSource;
+	private DataReader dataSource;
 
-	public VirtualDataManager(DataSearcher source, DataWriter saver)
+	public VirtualDataManager(DataReader source, DataWriter saver) throws IOException, UnCorrectDataException
 	{
 		dataSaver = saver;
 		dataSource = source;
 		data = source.getAllData();
-		
 		updateData();
 	}
 	
@@ -40,7 +42,7 @@ public class VirtualDataManager implements DataCorrector, DataSearcher{
 		return data;
 	}
 
-	public void writeData(String key, String newData) {
+	public void writeData(String key, String newData) throws IOException {
 		if (data.containsKey(key))
 			data.get(key).add(newData);
 		else
@@ -53,17 +55,17 @@ public class VirtualDataManager implements DataCorrector, DataSearcher{
 		updateData();
 	}
 
-	public void clearData() {
+	public void clearData() throws IOException {
 		data.clear();
 		updateData();
 	}
 
-	public void removeData(String key) {
+	public void removeData(String key) throws IOException {
 		data.remove(key);
 		updateData();
 	}
 
-	public void removeData(String key, String removingData) throws UnfoundedDataException {
+	public void removeData(String key, String removingData) throws UnfoundedDataException, IOException {
 		if (!data.containsKey(key))
 			throw new UnfoundedDataException("The key " + key + " has not found in data.");
 		data.get(key).remove(removingData);
@@ -72,7 +74,7 @@ public class VirtualDataManager implements DataCorrector, DataSearcher{
 	}
 	
 	//метод, сохраняющий изменения в базе данных
-	private void updateData()
+	private void updateData() throws IOException
 	{
 		dataSaver.clearData();
 		
