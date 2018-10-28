@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import org.telegram.telegrambots.ApiContextInitializer;
+import org.telegram.telegrambots.TelegramBotsApi;
+import org.telegram.telegrambots.exceptions.TelegramApiException;
+
 import bot_interfaces.Algorithm;
 import bot_interfaces.DataCorrector;
 import bot_interfaces.DataReader;
@@ -17,6 +21,7 @@ import dataManagers.FileDataWriter;
 import dataManagers.VirtualDataManager;
 import exceptions.UnCorrectDataException;
 import exceptions.UnfoundedDataException;
+import src.MyAmazingBot;
 import algs.*;
 
 public class Main {
@@ -24,6 +29,16 @@ public class Main {
 	public static void main(String[] args) {
 		
 
+		
+		 ApiContextInitializer.init();
+	      TelegramBotsApi botsApi = new TelegramBotsApi();
+	      try {
+	          botsApi.registerBot(new MyAmazingBot());
+	      } catch (TelegramApiException e) {
+	          e.printStackTrace();
+	      }
+	          
+	          
 		Scanner input = new Scanner(System.in);
 		List<String> users = new ArrayList<String>();
 		try {
