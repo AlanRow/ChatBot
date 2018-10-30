@@ -1,7 +1,10 @@
 package console_bot;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import bot_interfaces.UserControl;
+import structures.UserInfo;
 
 public class CUserController implements UserControl
 {
@@ -25,12 +28,14 @@ public class CUserController implements UserControl
 		return false;
 	}
 
-	public String[] getNewUsers() {
+	public List<UserInfo> getNewUsers() {
 		
 		Scanner input = new Scanner(System.in);
 
-		System.out.println("Здравствуйте, представтьесь, пожалуйста. Хорошо?");
-		return new String[] { input.nextLine()};
+		System.out.println("Здравствуйте, представтьесь, пожалуйста.");
+		List<UserInfo> novice = new ArrayList<UserInfo>();
+		novice.add(new UserInfo(0, input.nextLine()));
+		return novice;
 	}
 	
 }

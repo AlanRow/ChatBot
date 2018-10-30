@@ -1,8 +1,12 @@
 package bot_interfaces;
 
+import java.util.List;
+
+import structures.UserInfo;
+
 /*интерфейс класса, отвечающего за передачу сообщений пользователю. »нкапсулирует всю 
  работу с конкретной средой передачи сообщений (¬ , телеграм, консоль и др.). Ќе генерирует 
- никаких сообщений сам. ƒл€ каждого пользовател€ отдельный talker*/
+ никаких сообщений сам. ƒл€ каждого пользовател€ отдельный controller*/
 
 public interface MessageController {
 	
@@ -11,7 +15,9 @@ public interface MessageController {
 	//провер€ет, есть ли новые сообщени€ от пользовател€
 	public boolean areNewMessages();
 	//возвращает массив всех новых сообщений
-	public String[] getNewMessages();
-	//возвращает алгоритм, прив€занный к данному talker'у
+	public List<String> getNewMessages();
+	//возвращает алгоритм, прив€занный к данному controller'у
 	public Algorithm getAlgorithm();
+	//возвращает пользовател€, с которым работает Controller
+	public UserInfo getUser();
 }

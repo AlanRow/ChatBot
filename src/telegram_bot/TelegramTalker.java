@@ -6,46 +6,58 @@ import java.util.Queue;
 
 import bot_interfaces.Algorithm;
 import bot_interfaces.MessageController;
+import exceptions.IllegalReadingException;
+import exceptions.IllegalSendingException;
+import structures.UserInfo;
 
 public class TelegramTalker implements MessageController {
 	
-	private String userId;
+	private UserInfo user;
 	private Algorithm alg;
-	private Queue<String[]> forSend;
-	private Queue<String> forRead;
+	private MyAmazingBot bot;
 	
 	
-	public TelegramTalker(String user, Algorithm algorithm, Queue<String[]> forSending, Queue<String> forReading)
+	public TelegramTalker(UserInfo userInfo, Algorithm algorithm, MyAmazingBot tBot)
 	{
-		userId = user;
+		user = userInfo;
 		alg = algorithm;
-		forSend = forSending;
-		forRead = forReading;
+		bot = tBot;
 	}
 	
 	@Override
 	public void send(String message) {
-		forSend.add(new String[] {userId, message});
+		try {
+			bot.send(this, message);
+		} catch (IllegalSendingException e) {
+			System.out.println("Failed sending of the - <<" + message + ">> - message!");
+		}
 	}
 
 	@Override
 	public boolean areNewMessages() {
-		return !forRead.isEmpty();
+		return bot.checkPost(this);
 	}
 
 	@Override
-	public String[] getNewMessages() {
-		List<String> newMes = new ArrayList<String>();
-		
-		while (!forRead.isEmpty())
-			newMes.add(forRead.poll());
-		
-		return (String[]) newMes.toArray();
+	public List<String> getNewMessages() {
+		try {
+			List<String> messages = bot.getPost(this);
+			//System.out.println("талкер передал: " + messages);
+			return messages;
+		} catch (IllegalReadingException e) {
+			send("Sorry, I cannot read your mesages!");
+			return new ArrayList<String>();
+		}
 	}
 
 	@Override
 	public Algorithm getAlgorithm() {
 		return alg;
+	}
+
+	@Override
+	public UserInfo getUser() {
+		return user;
 	}
 
 }

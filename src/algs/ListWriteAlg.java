@@ -6,10 +6,11 @@ import java.util.List;
 import bot_interfaces.Algorithm;
 import bot_interfaces.DataCorrector;
 import exceptions.UnfoundedDataException;
+import structures.UserInfo;
 
 public class ListWriteAlg implements Algorithm {
 	private DataCorrector listWriter;
-	private String user;
+	private UserInfo user;
 	private boolean willCome;
 	private boolean isReady;
 	private boolean isTautology;
@@ -18,13 +19,15 @@ public class ListWriteAlg implements Algorithm {
 	
 	private List userList;
 
-	public ListWriteAlg(DataCorrector usersDataWriter, String user)
+	public ListWriteAlg(DataCorrector usersDataWriter, UserInfo user)
 	{
 		listWriter = usersDataWriter;
 		this.user = user;
 	}
 	
 	public void readMessage(String message) {
+		System.out.println("алгоритм прочитал: " + message);
+		
 		if (haveUnsolvedExceptions)
 			return;
 		
@@ -32,22 +35,22 @@ public class ListWriteAlg implements Algorithm {
 		try {
 			switch (message.toLowerCase())
 			{
-				case "я приду":
+				case "will":
 					if (!willCome)
 					{
-						listWriter.writeData(user, "will");
+						listWriter.writeData(Long.toString(user.getId()), user.getName());
 						willCome = true;
 						answer = "Хорошо, я вас записал.";
 					}
 					else
 						answer = "Да, я так и понял.";
 					break;
-				case "я не приду":
+				case "wont":
 					if (willCome)
 					{
 						willCome = false;
 						try {
-							listWriter.removeData(user, "will");
+							listWriter.removeData(Long.toString(user.getId()), user.getName());
 							answer = "Хорошо, я вас вычеркнул.";
 						}
 						catch (UnfoundedDataException ex) {
