@@ -29,7 +29,7 @@ public class CUserController implements UserControl
 		
 		Scanner input = new Scanner(System.in);
 
-		System.out.println("Здравствуйте, представтьесь, пожалуйста.");
+		System.out.println("Здравствуйте, представтьесь, пожалуйста. Хорошо?");
 		return new String[] { input.nextLine()};
 	}
 	

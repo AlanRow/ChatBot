@@ -4,8 +4,12 @@ import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
+import org.telegram.telegrambots.ApiContextInitializer;
+import org.telegram.telegrambots.TelegramBotsApi;
+import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 public class MyAmazingBot extends TelegramLongPollingBot {
+	
 	@Override
 	public void onUpdateReceived(Update update) {
 
@@ -17,16 +21,16 @@ public class MyAmazingBot extends TelegramLongPollingBot {
 	        String message_text = update.getMessage().getText();
 	        SendMessage message = new SendMessage()
 	        		.setChatId(chat_id)
-	                .setText("");
-	        if (message_text.equals("������")) {
+	                .setText(" ");
+	        if (message_text.equals("Привет")) {
 	        	 message = message
 	        			.setChatId(chat_id)
-	        			.setText("������ :�");
+	        			.setText("И тебе привет)");
 	        }
 	        else {
 	        	 message = message // Create a message object object
 		                .setChatId(chat_id)
-		                .setText(name);
+		                .setText("Что-то, простите?");
 	        }
 	       
 	        try {
@@ -45,6 +49,7 @@ public class MyAmazingBot extends TelegramLongPollingBot {
     @Override
     public String getBotToken() {
         // TODO
-        return "652391891:AAEQ5IbXbfTbHXIgRCuty6C6xb7F-yszvmc";
+        //return "650267550:AAHdCM9pFFKe8UKs8mhZ22a99Jt7OoNOSY4";
+    	return "652391891:AAEQ5IbXbfTbHXIgRCuty6C6xb7F-yszvmc";
     }
 }
