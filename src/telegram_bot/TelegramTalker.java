@@ -24,7 +24,6 @@ public class TelegramTalker implements MessageController {
 		bot = tBot;
 	}
 	
-	@Override
 	public void send(String message) {
 		try {
 			bot.send(this, message);
@@ -33,12 +32,10 @@ public class TelegramTalker implements MessageController {
 		}
 	}
 
-	@Override
 	public boolean areNewMessages() {
-		return bot.checkPost(this);
+		return !bot.checkPostIsEmpty(this);
 	}
 
-	@Override
 	public List<String> getNewMessages() {
 		try {
 			List<String> messages = bot.getPost(this);
@@ -50,14 +47,16 @@ public class TelegramTalker implements MessageController {
 		}
 	}
 
-	@Override
 	public Algorithm getAlgorithm() {
 		return alg;
 	}
 
-	@Override
 	public UserInfo getUser() {
 		return user;
+	}
+
+	public MessageController genererateSame(UserInfo another) {
+		return new TelegramTalker(another, alg.genererateSame(another), bot);
 	}
 
 }

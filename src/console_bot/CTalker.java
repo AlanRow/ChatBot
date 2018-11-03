@@ -13,9 +13,10 @@ public class CTalker implements MessageController
 	private Algorithm mainAlg;
 	private UserInfo user;
 	
-	public CTalker(Algorithm alg)
+	public CTalker(Algorithm alg, UserInfo user)
 	{
 		mainAlg = alg;
+		this.user = user;
 	}
 	
 	public void send(String message) 
@@ -43,6 +44,11 @@ public class CTalker implements MessageController
 
 	public UserInfo getUser() {
 		return user;
+	}
+
+	@Override
+	public MessageController genererateSame(UserInfo another) {
+		return new CTalker(mainAlg.genererateSame(another), another);
 	}
 	
 }

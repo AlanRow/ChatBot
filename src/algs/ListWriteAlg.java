@@ -5,60 +5,100 @@ import java.util.List;
 
 import bot_interfaces.Algorithm;
 import bot_interfaces.DataCorrector;
+import bot_interfaces.DataReader;
+import bot_interfaces.DataSearcher;
+import exceptions.UnCorrectDataException;
 import exceptions.UnfoundedDataException;
 import structures.UserInfo;
 
 public class ListWriteAlg implements Algorithm {
 	private DataCorrector listWriter;
+	private DataSearcher source;
 	private UserInfo user;
 	private boolean willCome;
 	private boolean isReady;
-	private boolean isTautology;
 	private boolean haveUnsolvedExceptions;
+	private boolean stoppedWork;
 	private String answer;
-	
-	private List userList;
 
-	public ListWriteAlg(DataCorrector usersDataWriter, UserInfo user)
+	public ListWriteAlg(DataCorrector usersDataWriter, DataSearcher extSource, UserInfo user)
 	{
 		listWriter = usersDataWriter;
+		source = extSource;
 		this.user = user;
+		haveUnsolvedExceptions = false;
+		stoppedWork = false;
+		isReady = false;
+		answer = "";
+		
+		try {
+			willCome = source.getAllData().containsKey(Long.toString(user.getId()));
+		} catch (IOException e) {
+			haveUnsolvedExceptions = true;
+			answer = "Sorry, file working is incorrect...";
+		} catch (UnCorrectDataException e) {
+			haveUnsolvedExceptions = true;
+			answer = "Sorry, the data is incorrect...";
+		}
 	}
 	
 	public void readMessage(String message) {
-		System.out.println("алгоритм прочитал: " + message);
+		//System.out.println("алгоритм прочитал: " + message);
+		
+		if (stoppedWork)
+			return;
+		
+		isReady = true;
 		
 		if (haveUnsolvedExceptions)
 			return;
 		
-		isReady = true;
 		try {
 			switch (message.toLowerCase())
 			{
 				case "will":
+					System.out.println("User id: " + user.getId());
 					if (!willCome)
 					{
 						listWriter.writeData(Long.toString(user.getId()), user.getName());
 						willCome = true;
-						answer = "Хорошо, я вас записал.";
+						answer = "Ok, I've recorded you.";
 					}
 					else
-						answer = "Да, я так и понял.";
+						answer = "Yes, I've just understand.";
 					break;
 				case "wont":
 					if (willCome)
 					{
 						willCome = false;
-						try {
-							listWriter.removeData(Long.toString(user.getId()), user.getName());
-							answer = "Хорошо, я вас вычеркнул.";
-						}
-						catch (UnfoundedDataException ex) {
-							answer = "Странно, вас не было в списке...";
-						}
+						listWriter.removeData(Long.toString(user.getId()));
+						answer = "Ok, I've struck off you";
 					}
 					else
-						answer = "Да, я так и понял.";
+						answer = "You haven't recorded, yet.";
+					break;
+				case "show":
+					answer = "";
+				try {
+					for (String extended : source.getAllData().keySet()) {
+						answer += source.getData(extended).get(0) + "\n";
+					}
+				} catch (UnCorrectDataException e) {
+					answer = "Sorry, data is broken.";
+					haveUnsolvedExceptions = true;
+				}
+				if (answer.equals(""))
+					answer = "The list is empty.";
+					break;
+				case "help":
+					answer = "Commands list:\n" +
+								"help - show this help-list\n" +
+								"will - record you to list\n" +
+								"wont - struck off you from list\n" +
+								"show - show the meeting-list\n";
+					break;
+				case "/start":
+					answer = "This bot makes list of your meeting. If you want to know more, please write \"help\"";
 					break;
 				default:
 					isReady = false;
@@ -67,18 +107,26 @@ public class ListWriteAlg implements Algorithm {
 		} 
 		catch (IOException ex) {
 			haveUnsolvedExceptions = true;
-			answer = "Простие, допущена ошибка в работе с фалами.";
+			answer = "Sorry, file working is incorrect...";
 		}
 		
 	}
 
 	public boolean isReadyToGenerate() {
-		return isReady;
+		if (haveUnsolvedExceptions && !stoppedWork) {
+			stoppedWork = true;
+			return true;
+		}
+		return isReady && !stoppedWork;
 	}
 
 	public String generateMessage() {
 		isReady = false;
 		return answer;
+	}
+
+	public Algorithm genererateSame(UserInfo another) {
+		return new ListWriteAlg(listWriter, source, another);
 	}
 	
 	

@@ -21,7 +21,7 @@ public class UserInfo {
 	
 	public UserInfo(User user) {
 		id = user.getId();
-		name = user.getUserName();
+		name = user.getFirstName();
 	}
 	
 	@Override

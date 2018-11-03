@@ -28,7 +28,6 @@ public class MyAmazingBot extends TelegramLongPollingBot implements UserControl{
 	private Map<UserInfo, List<String>> newMessages;
 	
 	private MyAmazingBot() {
-		//System.out.println("Ok!");
 		users = new ArrayList<UserInfo>();
 		newUsers = new ArrayList<UserInfo>();
 		newMessages = new HashMap<UserInfo, List<String>>();
@@ -66,10 +65,14 @@ public class MyAmazingBot extends TelegramLongPollingBot implements UserControl{
         }
 	}
 	
-	public boolean checkPost(TelegramTalker talker){
-		if (!users.contains(talker.getUser()))
-			return false;
-		return !newMessages.get(talker.getUser()).isEmpty();
+	public boolean checkPostIsEmpty(TelegramTalker talker){
+		//java.util.Scanner input = new java.util.Scanner(System.in);
+		//input.next();
+		//input.System.out.println("Ищем пользователя: " + talker.getUser().getId());
+		//System.out.println("В массиве: " + talker.getUser().getId());
+		if (!newMessages.containsKey(talker.getUser()))
+			return true;
+		return newMessages.get(talker.getUser()).isEmpty();
 	}
 	
 	public List<String> getPost(TelegramTalker talker) throws IllegalReadingException{
@@ -87,12 +90,15 @@ public class MyAmazingBot extends TelegramLongPollingBot implements UserControl{
 
 	    // We check if the update has a message and the message has text
 	    if (update.hasMessage() && update.getMessage().hasText()) {
-			System.out.println("бот прочитал: " + update.getMessage().getText());
 	    	UserInfo user = new UserInfo(update.getMessage().getFrom());
 	    	
-	    	if (!newMessages.containsKey(user))
+	    	//System.out.println("бот принял: " + update.getMessage().getText());
+	    	
+	    	if (!newMessages.containsKey(user)) {
 	    		newMessages.put(user, new ArrayList<String>());
-	    		newMessages.get(user).add(update.getMessage().getText());
+	    	}
+
+    		newMessages.get(user).add(update.getMessage().getText());
 	    	
 	    	if (!users.contains(user)) {
 	    		users.add(user);
@@ -121,6 +127,10 @@ public class MyAmazingBot extends TelegramLongPollingBot implements UserControl{
 	@Override
 	public List<UserInfo> getNewUsers() {
 		List<UserInfo> novices = new ArrayList<UserInfo>(newUsers);
+		
+		for (UserInfo usr : novices)
+			System.out.println("User id: " + usr.getId());
+		
 		newUsers.clear();
 		return novices;
 	}

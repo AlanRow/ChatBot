@@ -1,6 +1,7 @@
 package dataManagers;
 
 import bot_interfaces.DataCorrector;
+import bot_interfaces.DataManager;
 import bot_interfaces.DataReader;
 import bot_interfaces.DataSearcher;
 import bot_interfaces.DataWriter;
@@ -17,7 +18,7 @@ import exceptions.*;
 типу ключ-значения в виде хэш-таблицы. Инкапсулирует всю работу с информацией.
 делегирует работу с самими источниками данных (файлами, интернетом и т. п.)
 другим кллассам*/ 
-public class VirtualDataManager implements DataCorrector, DataSearcher{
+public class VirtualDataManager extends DataManager{
 
 	//хэш-таблица данных
 	private Map<String, List<String>> data;
@@ -31,6 +32,14 @@ public class VirtualDataManager implements DataCorrector, DataSearcher{
 		dataSaver = saver;
 		dataSource = source;
 		data = source.getAllData();
+		updateData();
+	}
+	
+	public VirtualDataManager() throws IOException, UnCorrectDataException
+	{
+		dataSaver = new FileDataWriter("list1.txt");
+		dataSource = new FileDataReader("list1.txt");
+		data = dataSource.getAllData();
 		updateData();
 	}
 	

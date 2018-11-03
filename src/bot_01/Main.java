@@ -8,6 +8,7 @@ import java.util.Scanner;
 
 import bot_interfaces.Algorithm;
 import bot_interfaces.DataCorrector;
+import bot_interfaces.DataManager;
 import bot_interfaces.DataReader;
 import bot_interfaces.DataWriter;
 import bot_interfaces.UserControl;
@@ -33,80 +34,61 @@ import algs.*;
 public class Main {
 
 	public static void main(String[] args) {
-
-		/*MyAmazingBot myBot;
-		try {
-			myBot = MyAmazingBot.getBot();
-		}
-		catch (ManyTelBotsException ex) {
-			return;
-		}*/
-		Scanner input = new Scanner(System.in);
 		
-		List<UserInfo> users = new ArrayList<UserInfo>();
-		
-		DataWriter fileWriter;
-		DataReader fileReader;
-		DataCorrector corrector;
+		//создание контроллера новых пользователей
+		UserControl bot;
 		try {
-				fileWriter = new FileDataWriter("list1.txt");
-				fileReader = new FileDataReader("list1.txt");
-				corrector = new VirtualDataManager(fileReader, fileWriter);
-		}
-		catch (IOException ex) {
-			System.out.println("Programm can't work with file list1.txt.");
-			return;
-		}
-		catch (UnCorrectDataException ex) {
-			System.out.println("The data is broken");
-			return;
-		}
-			
-
-		//UserControl control = new CUserController();
-		MyAmazingBot control;
-		try {
-			control = MyAmazingBot.getBot();
+			bot = MyAmazingBot.getBot();
 		} catch (ManyTelBotsException e) {
 			System.out.println("So many bots!");
 			return;
 		}
 		
-		//updateUsers(control, users);
+		//подгрузка данных
+		DataManager dataManager;
+		try {
+			dataManager = new VirtualDataManager();
+		} catch (IOException e) {
+			System.out.println("File working error with");
+			return;
+		} catch (UnCorrectDataException e) {
+			System.out.println("Data is uncorrect: " + e.getMessage());
+			return;
+		}
+		
+		//создание шаблона алгоритма
+		Algorithm mainAlg = new ListWriteAlg(dataManager, dataManager, new UserInfo(0, "user"));
+		//создание шаблона индивидуального контроллера сообщений
+		MessageController mainTalker = new TelegramTalker(new UserInfo(0, "user"), mainAlg, (MyAmazingBot) bot);
+		//список всех контроллеров, отдельный дл€ каждого пользовател€
 		List<MessageController> talkers = new ArrayList<MessageController>();
-			
-
-		//updateTelegramUsers(control, talkers, users, corrector);
-		//for (UserInfo user : users)
-		//{	
-			//Algorithm alg = new ListWriteAlg(corrector, user);
-			//talkers.add(new TelegramTalker(user, alg, control));
-		//}
-
+		
+		//обновление пользователей в списке при помощи контроллера пользователей и шаблона
+		updateSameUsers(bot, talkers, mainTalker);
 			
 		while (true)
 		{
 			//проверка по€влени€ новых пользователей (циклическа€ проверка актульна дл€ соцсетей)
-			//updateUsers(control, users);
-			updateTelegramUsers(control, talkers, users, corrector);
+			updateSameUsers(bot, talkers, mainTalker);
 			
 			//анализирует все имеющиес€ новые сообщени€ и отвечает
 			talk(talkers);
 		}
 	}
 
-	//public static void updateUsers(UserControl control, List<UserInfo> users) {
-		//}
-	//}
-
-	public static void updateTelegramUsers(MyAmazingBot bot, List<MessageController> talkers, List<UserInfo> users, DataCorrector corrector){
+	public static List<MessageController> generateTalkers(List<UserInfo> users, MessageController original) {
+		List<MessageController> talkers = new ArrayList<MessageController>();
+		
+		for (UserInfo user : users) {
+			talkers.add(original.genererateSame(user));
+		}
+		
+		return talkers;
+	}
+	
+	public static void updateSameUsers(UserControl bot, List<MessageController> talkers, MessageController original){
 		if (bot.areNewUsers()) {
-			List<UserInfo> newUsers = bot.getNewUsers();
-			for (UserInfo user : newUsers) {
-				users.add(user);
-				Algorithm alg = new ListWriteAlg(corrector, user);
-				talkers.add(new TelegramTalker(user, alg, bot));
-			}
+			talkers.addAll(generateTalkers(bot.getNewUsers(), original));
 		}
 	}
 	
@@ -114,7 +96,12 @@ public class Main {
 		//System.out.println("–азговор идет...");
 		for (MessageController talker : talkers) {
 			Algorithm alg = talker.getAlgorithm();
-			List<String> messages = talker.getNewMessages();
+			
+			List<String> messages = new ArrayList<String>();
+			if (talker.areNewMessages()) {
+				System.out.println("Are new messages.");
+				messages = talker.getNewMessages();
+			}
 			
 			for (String mes : messages) {
 				System.out.println("алгоритму склрмили: " + mes);

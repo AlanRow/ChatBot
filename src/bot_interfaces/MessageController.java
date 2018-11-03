@@ -20,4 +20,6 @@ public interface MessageController {
 	public Algorithm getAlgorithm();
 	//возвращает пользователя, с которым работает Controller
 	public UserInfo getUser();
+	//порождает копию такого же talker'а с same-алгоритмом, но с другим пользователем.
+	public MessageController genererateSame(UserInfo another);
 }

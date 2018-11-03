@@ -1,6 +1,7 @@
 package algs;
 
 import bot_interfaces.Algorithm;
+import structures.UserInfo;
 
 public class HelloAlg implements Algorithm
 {
@@ -31,5 +32,10 @@ public class HelloAlg implements Algorithm
 		String answer = (isGreeted) ? "We have greeted, yet." : "Hello!";
 		isGreeted = true;
 		return answer;
+	}
+
+	@Override
+	public Algorithm genererateSame(UserInfo another) {
+		return new HelloAlg();
 	}
 }

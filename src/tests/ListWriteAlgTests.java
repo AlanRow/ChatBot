@@ -12,41 +12,42 @@ import dataManagers.FileDataReader;
 import dataManagers.FileDataWriter;
 import dataManagers.VirtualDataManager;
 import exceptions.UnCorrectDataException;
+import structures.UserInfo;
 
 class ListWriteAlgTests {
 
 	@Test
 	void willComeTest() throws IOException, UnCorrectDataException {
-		ListWriteAlg alg = initializeLWA("lwaTest1.txt", "user", "");
+		ListWriteAlg alg = initializeLWA("lwaTest1.txt", new UserInfo(0, "user"), "");
 		
-		alg.readMessage("Я пРиДу");
+		alg.readMessage("wIlL");
 		assertEquals(true, alg.isReadyToGenerate());
 		assertEquals("Хорошо, я вас записал.", alg.generateMessage());
 	}
 	
 	void wontComeTest() throws IOException, UnCorrectDataException {
-		ListWriteAlg alg = initializeLWA("lwaTest2.txt", "user", "<user><will>\r\n");
+		ListWriteAlg alg = initializeLWA("lwaTest2.txt",new UserInfo(0, "user"), "<user><will>\r\n");
 		
-		alg.readMessage("я не ПРИДУ");
+		alg.readMessage("WoNt");
 		assertEquals(true, alg.isReadyToGenerate());
 		assertEquals("Хорошо, я вас вычеркнул.", alg.generateMessage());
 	}
 	
 	void tautologyTest() throws IOException, UnCorrectDataException {
-		ListWriteAlg alg = initializeLWA("lwaTest2.txt", "user", "<user><will>\r\n");
+		ListWriteAlg alg = initializeLWA("lwaTest2.txt", new UserInfo(0, "user"), "<user><will>\r\n");
 		
-		alg.readMessage("Я ПРИДУ");
+		alg.readMessage("will");
 		assertEquals(true, alg.isReadyToGenerate());
 		assertEquals("Да, я так и понял.", alg.generateMessage());
 		
-		alg.readMessage("я не приду");
+		alg.readMessage("WONT");
 		alg.generateMessage();
-		alg.readMessage("Я не ПридУ");
+		alg.readMessage("WonT");
 		assertEquals(true, alg.isReadyToGenerate());
 		assertEquals("Да, я так и понял.", alg.generateMessage());
 	}
 	
-	private ListWriteAlg initializeLWA(String fileName, String user, String data) throws IOException, UnCorrectDataException
+	private ListWriteAlg initializeLWA(String fileName, UserInfo user, String data) throws IOException, UnCorrectDataException
 	{
 		try (FileWriter writer = new FileWriter(fileName))
 		{
@@ -56,6 +57,6 @@ class ListWriteAlgTests {
 		
 		VirtualDataManager manager = new VirtualDataManager(new FileDataReader(fileName), new FileDataWriter(fileName));
 		
-		return new ListWriteAlg(manager, user);
+		return new ListWriteAlg(manager, manager, user);
 	}
 }
