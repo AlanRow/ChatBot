@@ -2,6 +2,7 @@ package tests;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -18,44 +19,66 @@ class ListWriteAlgTests {
 
 	@Test
 	void willComeTest() throws IOException, UnCorrectDataException {
-		ListWriteAlg alg = initializeLWA("lwaTest1.txt", new UserInfo(0, "user"), "");
+		File file = new File("lwaTest.txt");
+		ListWriteAlg alg = initializeLWA(file, new UserInfo(0, "user"), "");
 		
 		alg.readMessage("wIlL");
 		assertEquals(true, alg.isReadyToGenerate());
-		assertEquals("Хорошо, я вас записал.", alg.generateMessage());
+		assertEquals("Ok, I've recorded you.", alg.generateMessage());
+		
+		file.delete();
 	}
 	
+	@Test
 	void wontComeTest() throws IOException, UnCorrectDataException {
-		ListWriteAlg alg = initializeLWA("lwaTest2.txt",new UserInfo(0, "user"), "<user><will>\r\n");
+		File file = new File("lwaTest.txt");
+		ListWriteAlg alg = initializeLWA(file, new UserInfo(0, "user"), "<0>:<user>\r\n");
 		
 		alg.readMessage("WoNt");
 		assertEquals(true, alg.isReadyToGenerate());
-		assertEquals("Хорошо, я вас вычеркнул.", alg.generateMessage());
+		assertEquals("Ok, I've struck off you", alg.generateMessage());
+		
+		file.delete();
 	}
 	
+	@Test
 	void tautologyTest() throws IOException, UnCorrectDataException {
-		ListWriteAlg alg = initializeLWA("lwaTest2.txt", new UserInfo(0, "user"), "<user><will>\r\n");
+		File file = new File("lwaTest.txt");
+		ListWriteAlg alg = initializeLWA(file, new UserInfo(0, "user"), "<0>:<user>\r\n");
 		
 		alg.readMessage("will");
 		assertEquals(true, alg.isReadyToGenerate());
-		assertEquals("Да, я так и понял.", alg.generateMessage());
+		assertEquals("Yes, I've just understand.", alg.generateMessage());
 		
 		alg.readMessage("WONT");
 		alg.generateMessage();
 		alg.readMessage("WonT");
 		assertEquals(true, alg.isReadyToGenerate());
-		assertEquals("Да, я так и понял.", alg.generateMessage());
+		assertEquals("You haven't recorded, yet.", alg.generateMessage());
+		
+		file.delete();
 	}
 	
-	private ListWriteAlg initializeLWA(String fileName, UserInfo user, String data) throws IOException, UnCorrectDataException
+	@Test
+	public void showTest() throws IOException, UnCorrectDataException {
+		File file = new File("lwaTest.txt");
+		ListWriteAlg alg = initializeLWA(file, new UserInfo(0, "user"), "<0>:<user1>\r\n<1>:<user2>\r\n");
+		
+		alg.readMessage("ShOw");
+		assertEquals("user1\nuser2\n", alg.generateMessage());
+		
+		file.delete();
+	}
+	
+	private ListWriteAlg initializeLWA(File file, UserInfo user, String data) throws IOException, UnCorrectDataException
 	{
-		try (FileWriter writer = new FileWriter(fileName))
+		try (FileWriter writer = new FileWriter(file))
 		{
 			writer.write(data);
 			writer.flush();
 		}
 		
-		VirtualDataManager manager = new VirtualDataManager(new FileDataReader(fileName), new FileDataWriter(fileName));
+		VirtualDataManager manager = new VirtualDataManager(file.getName());
 		
 		return new ListWriteAlg(manager, manager, user);
 	}

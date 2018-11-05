@@ -47,7 +47,7 @@ public class Main {
 		//подгрузка данных
 		DataManager dataManager;
 		try {
-			dataManager = new VirtualDataManager();
+			dataManager = new VirtualDataManager("list1.txt");
 		} catch (IOException e) {
 			System.out.println("File working error with");
 			return;
@@ -93,18 +93,15 @@ public class Main {
 	}
 	
 	public static void talk(List<MessageController> talkers) {
-		//System.out.println("Разговор идет...");
 		for (MessageController talker : talkers) {
 			Algorithm alg = talker.getAlgorithm();
 			
 			List<String> messages = new ArrayList<String>();
 			if (talker.areNewMessages()) {
-				System.out.println("Are new messages.");
 				messages = talker.getNewMessages();
 			}
 			
 			for (String mes : messages) {
-				System.out.println("алгоритму склрмили: " + mes);
 				alg.readMessage(mes);
 				while (alg.isReadyToGenerate())
 					talker.send(alg.generateMessage());

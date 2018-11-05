@@ -35,10 +35,10 @@ public class VirtualDataManager extends DataManager{
 		updateData();
 	}
 	
-	public VirtualDataManager() throws IOException, UnCorrectDataException
+	public VirtualDataManager(String fileName) throws IOException, UnCorrectDataException
 	{
-		dataSaver = new FileDataWriter("list1.txt");
-		dataSource = new FileDataReader("list1.txt");
+		dataSaver = new FileDataWriter(fileName);
+		dataSource = new FileDataReader(fileName);
 		data = dataSource.getAllData();
 		updateData();
 	}

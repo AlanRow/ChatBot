@@ -30,7 +30,7 @@ public class FileDataReader implements DataReader {
 			while ((key = readWord(reader)) != null)
 			{
 				if ((char)reader.read() != ':')
-					throw new UnCorrectDataException("The file <" + file.getName() + "> has the uncorrected data.");
+					throw new UnCorrectDataException("The file <" + file.getName() + "> has the uncorrect data.");
 				String value = readWord(reader);
 				
 				if (value == null)
@@ -52,7 +52,7 @@ public class FileDataReader implements DataReader {
 		}
 	}
 
-	public static String readWord(FileReader reader) throws IOException, UnCorrectDataException
+	private static String readWord(FileReader reader) throws IOException, UnCorrectDataException
 	{
 		int code;
 		String word = "";

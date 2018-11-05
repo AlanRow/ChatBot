@@ -17,19 +17,22 @@ public class ListWriteAlg implements Algorithm {
 	private UserInfo user;
 	private boolean willCome;
 	private boolean isReady;
+	private String info;
 	private boolean haveUnsolvedExceptions;
 	private boolean stoppedWork;
 	private String answer;
+	String errorMessage;
 
-	public ListWriteAlg(DataCorrector usersDataWriter, DataSearcher extSource, UserInfo user)
-	{
+	public ListWriteAlg(DataCorrector usersDataWriter, DataSearcher extSource, UserInfo user) {
 		listWriter = usersDataWriter;
 		source = extSource;
 		this.user = user;
 		haveUnsolvedExceptions = false;
 		stoppedWork = false;
 		isReady = false;
+		info = "";
 		answer = "";
+		errorMessage = "";
 		
 		try {
 			willCome = source.getAllData().containsKey(Long.toString(user.getId()));
@@ -42,11 +45,13 @@ public class ListWriteAlg implements Algorithm {
 		}
 	}
 	
+	public ListWriteAlg(DataCorrector usersDataWriter, DataSearcher extSource, UserInfo user, String inform) {
+		this(usersDataWriter, extSource, user);
+		info = inform;
+	}
+	
 	public void readMessage(String message) {
 		//System.out.println("алгоритм прочитал: " + message);
-		
-		if (stoppedWork)
-			return;
 		
 		isReady = true;
 		
@@ -57,7 +62,6 @@ public class ListWriteAlg implements Algorithm {
 			switch (message.toLowerCase())
 			{
 				case "will":
-					System.out.println("User id: " + user.getId());
 					if (!willCome)
 					{
 						listWriter.writeData(Long.toString(user.getId()), user.getName());
@@ -84,7 +88,7 @@ public class ListWriteAlg implements Algorithm {
 						answer += source.getData(extended).get(0) + "\n";
 					}
 				} catch (UnCorrectDataException e) {
-					answer = "Sorry, data is broken.";
+					errorMessage = "Sorry, data is broken.";
 					haveUnsolvedExceptions = true;
 				}
 				if (answer.equals(""))
@@ -93,9 +97,16 @@ public class ListWriteAlg implements Algorithm {
 				case "help":
 					answer = "Commands list:\n" +
 								"help - show this help-list\n" +
+								"info - show the information about meeting (name, time, place, etc.)\n" +
 								"will - record you to list\n" +
 								"wont - struck off you from list\n" +
 								"show - show the meeting-list\n";
+					break;
+				case "info":
+					if (!info.equals(""))
+						answer = info;
+					else
+						answer = "Sorry, there isn't information about this meeting.";
 					break;
 				case "/start":
 					answer = "This bot makes list of your meeting. If you want to know more, please write \"help\"";
@@ -107,21 +118,22 @@ public class ListWriteAlg implements Algorithm {
 		} 
 		catch (IOException ex) {
 			haveUnsolvedExceptions = true;
-			answer = "Sorry, file working is incorrect...";
+			errorMessage = "Sorry, file working is incorrect...";
 		}
+		
+		
 		
 	}
 
 	public boolean isReadyToGenerate() {
-		if (haveUnsolvedExceptions && !stoppedWork) {
-			stoppedWork = true;
-			return true;
-		}
-		return isReady && !stoppedWork;
+		return isReady;
 	}
 
 	public String generateMessage() {
 		isReady = false;
+		
+		if (haveUnsolvedExceptions)
+			return errorMessage;
 		return answer;
 	}
 

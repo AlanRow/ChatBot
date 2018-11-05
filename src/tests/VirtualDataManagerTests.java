@@ -2,6 +2,7 @@ package tests;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -20,7 +21,8 @@ class VirtualDataManagerTests {
 
 	@Test
 	void getAllDataTest() throws IOException, UnCorrectDataException {
-		VirtualDataManager manager = initializeDM("vdmTest2.txt", "<key1>:<value1>\r\n<key2>:<value2>\r\n<key1>:<value3>\r\n");
+		File file = new File("vdmTest.txt");
+		VirtualDataManager manager = initializeDM(file, "<key1>:<value1>\r\n<key2>:<value2>\r\n<key1>:<value3>\r\n");
 		
 		Map<String, List<String>> data = manager.getAllData();
 		
@@ -29,55 +31,68 @@ class VirtualDataManagerTests {
 		assertEquals(data.get("key1").get(0), "value1");
 		assertEquals(data.get("key2").get(0), "value2");
 		assertEquals(data.get("key1").get(1), "value3");
+		
+		file.delete();
 	}
 	
 	@Test
 	void getDataTest() throws IOException, UnCorrectDataException {
-		VirtualDataManager manager = initializeDM("vdmTest2.txt", "<key1>:<value1>\r\n<key2>:<value2>\r\n<key1>:<value3>\r\n");
+		File file = new File("vdmTest.txt");
+		VirtualDataManager manager = initializeDM(file, "<key1>:<value1>\r\n<key2>:<value2>\r\n<key1>:<value3>\r\n");
 		
 		assertEquals(manager.getData("key1").get(0), "value1");
 		assertEquals(manager.getData("key2").get(0), "value2");
 		assertEquals(manager.getData("key1").get(1), "value3");
+		file.delete();
 	}
 	
 
 	@Test
 	void clearDataTest() throws IOException, UnCorrectDataException {
-		VirtualDataManager manager = initializeDM("vdmTest3.txt", "<key1>:<value1>\r\n<key2>:<value2>\r\n<key1>:<value3>\r\n");
+		File file = new File("vdmTest.txt");
+		VirtualDataManager manager = initializeDM(file, "<key1>:<value1>\r\n<key2>:<value2>\r\n<key1>:<value3>\r\n");
 		
 		manager.clearData();
-		try (FileReader reader = new FileReader("vdmTest3.txt"))
+		try (FileReader reader = new FileReader(file))
 		{
 			assertEquals(true, reader.read() < 0);
 		}
+		
+		file.delete();
 	}
 	
 	@Test
 	void writeDataTest() throws IOException, UnCorrectDataException {
-		VirtualDataManager manager = initializeDM("vdmTest4.txt", "");
+		File file = new File("vdmTest.txt");
+		VirtualDataManager manager = initializeDM(file, "");
 		
 		manager.writeData("someKey","someValue");
-		try (FileReader reader = new FileReader("vdmTest4.txt"))
+		try (FileReader reader = new FileReader(file))
 		{
 			assertEquals("<someKey>:<someValue>\r\n", readFile(reader));
 		}
+		
+		file.delete();
 	}
 	
 	@Test
 	void removeDataTest() throws IOException, UnCorrectDataException, UnfoundedDataException {
-		VirtualDataManager manager = initializeDM("vdmTest5.txt", "<key1>:<value1>\r\n<key2>:<value2>\r\n<key1>:<value3>\r\n<key2>:<value4>\r\n");
+		File file = new File("vdmTest.txt");
+		VirtualDataManager manager = initializeDM(file, "<key1>:<value1>\r\n<key2>:<value2>\r\n<key1>:<value3>\r\n<key2>:<value4>\r\n");
 		
 		manager.removeData("key1");
-		try (FileReader reader = new FileReader("vdmTest5.txt"))
+		try (FileReader reader = new FileReader(file))
 		{
 			assertEquals("<key2>:<value2>\r\n<key2>:<value4>\r\n", readFile(reader));
 		}
 		
 		manager.removeData("key2", "value2");
-		try (FileReader reader = new FileReader("vdmTest5.txt"))
+		try (FileReader reader = new FileReader(file))
 		{
 			assertEquals("<key2>:<value4>\r\n", readFile(reader));
 		}
+		
+		file.delete();
 	}
 	
 	private static String readFile(FileReader reader) throws IOException
@@ -93,14 +108,14 @@ class VirtualDataManagerTests {
 		return fileText;
 	}
 	
-	private VirtualDataManager initializeDM(String fileName, String data) throws IOException, UnCorrectDataException
+	private VirtualDataManager initializeDM(File file, String data) throws IOException, UnCorrectDataException
 	{
-		try (FileWriter writer = new FileWriter(fileName))
+		try (FileWriter writer = new FileWriter(file))
 		{
 			writer.write(data);
 			writer.flush();
 		}
 		
-		return new VirtualDataManager(new FileDataReader(fileName), new FileDataWriter(fileName));
+		return new VirtualDataManager(new FileDataReader(file.getName()), new FileDataWriter(file.getName()));
 	}
 }
