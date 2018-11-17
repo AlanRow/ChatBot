@@ -20,11 +20,16 @@ import exceptions.IllegalSendingException;
 import exceptions.ManyTelBotsException;
 import structures.UserInfo;
 
+//бот, который работает со всеми пользовател€ми в телеграмме
 public class MyAmazingBot extends TelegramLongPollingBot implements UserControl{
 	
+	//показывает создан ли бот. Ќужен дл€ исключени€ работы сразу двух ботов (будет ошибка)
 	private static boolean started = false;
+	//все пользователи, известные боту
 	private List<UserInfo> users;
+	//новые необработанные пользователи (возможно лучше сделать очередь)
 	private List<UserInfo> newUsers;
+	//набор пришедших сообщений дл€ каждого пользовател€
 	private Map<UserInfo, List<String>> newMessages;
 	
 	private MyAmazingBot() {
@@ -33,6 +38,7 @@ public class MyAmazingBot extends TelegramLongPollingBot implements UserControl{
 		newMessages = new HashMap<UserInfo, List<String>>();
 	}
 	
+	//запуск работы бота. ѕозвол€ет не допустить создани€ двух ботов.
 	public static MyAmazingBot getBot() throws ManyTelBotsException {
 		if (started)
 			throw new ManyTelBotsException();
@@ -50,6 +56,7 @@ public class MyAmazingBot extends TelegramLongPollingBot implements UserControl{
 	    return bot;
 	}
 	
+	//отправка сообщени€. ѕо факту используетс€ только внутри толкера, который его отправл€ет
 	public void send(TelegramTalker talker, String text) throws IllegalSendingException {
 		if (!users.contains(talker.getUser()))
 			throw new IllegalSendingException();
@@ -65,34 +72,30 @@ public class MyAmazingBot extends TelegramLongPollingBot implements UserControl{
         }
 	}
 	
+	//проверка наличи€ новых сообщений. »сп. внутри толкера.
 	public boolean checkPostIsEmpty(TelegramTalker talker){
-		//java.util.Scanner input = new java.util.Scanner(System.in);
-		//input.next();
-		//input.System.out.println("»щем пользовател€: " + talker.getUser().getId());
-		//System.out.println("¬ массиве: " + talker.getUser().getId());
 		if (!newMessages.containsKey(talker.getUser()))
 			return true;
 		return newMessages.get(talker.getUser()).isEmpty();
 	}
 	
+	//выемка почты. ¬нутри толкера.
 	public List<String> getPost(TelegramTalker talker) throws IllegalReadingException{
 		if (!users.contains(talker.getUser()))
 			throw new IllegalReadingException();
-		//System.out.println("бот знал: " + newMessages.get(talker.getUser()));
 		List<String> post = new ArrayList<String> (newMessages.get(talker.getUser())); 
 		newMessages.get(talker.getUser()).clear();
 		
 		return post;
 	}
 	
+	//метод, запускающийс€ при приходе нового сообщени€
 	@Override
 	public void onUpdateReceived(Update update) {
 
 	    // We check if the update has a message and the message has text
 	    if (update.hasMessage() && update.getMessage().hasText()) {
 	    	UserInfo user = new UserInfo(update.getMessage().getFrom());
-	    	
-	    	//System.out.println("бот прин€л: " + update.getMessage().getText());
 	    	
 	    	if (!newMessages.containsKey(user)) {
 	    		newMessages.put(user, new ArrayList<String>());
@@ -117,19 +120,16 @@ public class MyAmazingBot extends TelegramLongPollingBot implements UserControl{
         return "650267550:AAHdCM9pFFKe8UKs8mhZ22a99Jt7OoNOSY4";
     }
     
+    //есть кто новый?
 	@Override
 	public boolean areNewUsers() {
-		if (newUsers == null)
-			System.out.println("It's not ok");
 		return !newUsers.isEmpty();
 	}
 	
+	//новые пользователи
 	@Override
 	public List<UserInfo> getNewUsers() {
 		List<UserInfo> novices = new ArrayList<UserInfo>(newUsers);
-		
-		for (UserInfo usr : novices)
-			System.out.println("User id: " + usr.getId());
 		
 		newUsers.clear();
 		return novices;

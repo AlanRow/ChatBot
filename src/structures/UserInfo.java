@@ -2,26 +2,27 @@ package structures;
 
 import org.telegram.telegrambots.api.objects.User;
 
+//класс содержащий всю информацию о пользователе, будь то пользователь в Telegram или в ¬ 
 public class UserInfo {
-	private long id;
-	private String name;
+	private long id; //id - уневерсальный идентификатор пользовател€
+	private String userName; //ник пользовател€
 	
 	public long getId() {
 		return id;
 	}
 	
 	public String getName() {
-		return name;
+		return userName;
 	}
 	
 	public UserInfo(int userId, String userName) {
 		id = userId;
-		name = userName;
+		userName = userName;
 	}
 	
 	public UserInfo(User user) {
 		id = user.getId();
-		name = user.getFirstName();
+		userName = (user.getUserName() == null) ? user.getFirstName() : "@" + user.getUserName();
 	}
 	
 	@Override
@@ -30,7 +31,8 @@ public class UserInfo {
 			return true;
 		
 		if (obj instanceof UserInfo)
-			return id == ((UserInfo)obj).getId();
+			return id == ((UserInfo)obj).getId();//сравниваем пользователей по id
+		//примечание: хорошо бы сделать id уникальным и дл€ разных платформ
 		
 		return false;
 	}

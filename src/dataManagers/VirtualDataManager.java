@@ -35,6 +35,7 @@ public class VirtualDataManager extends DataManager{
 		updateData();
 	}
 	
+	//создает виртуальный менеджер данных на основе одного файла
 	public VirtualDataManager(String fileName) throws IOException, UncorrectDataException
 	{
 		dataSaver = new FileDataWriter(fileName);
@@ -43,14 +44,17 @@ public class VirtualDataManager extends DataManager{
 		updateData();
 	}
 	
+	//получает все данные по ключу
 	public List<String> getData(String key) {
 		return data.get(key);
 	}
 
+	//получает Map всех данных
 	public Map<String, List<String>> getAllData() {
 		return data;
 	}
 
+	//записывает новые данные
 	public void writeData(String key, String newData) throws IOException {
 		if (data.containsKey(key))
 			data.get(key).add(newData);
@@ -64,16 +68,19 @@ public class VirtualDataManager extends DataManager{
 		updateData();
 	}
 
+	//очищает данные в файле и в Map'e
 	public void clearData() throws IOException {
 		data.clear();
 		updateData();
 	}
 
+	//убирает все данные по заданному ключу
 	public void removeData(String key) throws IOException {
 		data.remove(key);
 		updateData();
 	}
 
+	//убирает выбранное ключ-значение
 	public void removeData(String key, String removingData) throws UnfoundedDataException, IOException {
 		if (!data.containsKey(key))
 			throw new UnfoundedDataException("The key " + key + " has not found in data.");

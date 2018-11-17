@@ -73,6 +73,12 @@ public class Main {
 			
 			//анализирует все имеющиеся новые сообщения и отвечает
 			talk(talkers);
+			
+			try {
+				Thread.sleep(50);//подождем немного, чтобы не грузить процессор
+			} 
+			catch (InterruptedException e) {
+			}
 		}
 	}
 

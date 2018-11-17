@@ -11,6 +11,7 @@ import exceptions.UncorrectDataException;
 import exceptions.UnfoundedDataException;
 import structures.UserInfo;
 
+//алгоритм работы со списком встречи
 public class ListWriteAlg implements Algorithm {
 	private DataCorrector listWriter;
 	private DataSearcher source;
@@ -50,8 +51,8 @@ public class ListWriteAlg implements Algorithm {
 		info = inform;
 	}
 	
+	//обработка пришедшего сообщения
 	public void readMessage(String message) {
-		//System.out.println("алгоритм прочитал: " + message);
 		
 		isReady = true;
 		
@@ -59,8 +60,10 @@ public class ListWriteAlg implements Algorithm {
 			return;
 		
 		try {
+			//обработка комманд
 			switch (message.toLowerCase())
 			{
+				//запись пользователя в список
 				case "will":
 					if (!willCome)
 					{
@@ -71,6 +74,7 @@ public class ListWriteAlg implements Algorithm {
 					else
 						answer = "Yes, I've just understand.";
 					break;
+				//вычеркивание из списка
 				case "wont":
 					if (willCome)
 					{
@@ -81,6 +85,7 @@ public class ListWriteAlg implements Algorithm {
 					else
 						answer = "You haven't recorded, yet.";
 					break;
+				//показ списка встречи
 				case "show":
 					answer = "";
 				try {
@@ -94,6 +99,7 @@ public class ListWriteAlg implements Algorithm {
 				if (answer.equals(""))
 					answer = "The list is empty.";
 					break;
+				//показ списка команд
 				case "help":
 					answer = "Commands list:\n" +
 								"help - show this help-list\n" +
@@ -102,12 +108,14 @@ public class ListWriteAlg implements Algorithm {
 								"wont - struck off you from list\n" +
 								"show - show the meeting-list\n";
 					break;
+				//выводит информцию о встрече
 				case "info":
 					if (!info.equals(""))
 						answer = info;
 					else
 						answer = "Sorry, there isn't information about this meeting.";
 					break;
+				//выводит информацию о боте
 				case "/start":
 					answer = "This bot makes list of your meeting. If you want to know more, please write \"help\"";
 					break;
