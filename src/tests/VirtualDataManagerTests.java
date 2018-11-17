@@ -14,13 +14,13 @@ import org.junit.jupiter.api.Test;
 import dataManagers.FileDataReader;
 import dataManagers.FileDataWriter;
 import dataManagers.VirtualDataManager;
-import exceptions.UnCorrectDataException;
+import exceptions.UncorrectDataException;
 import exceptions.UnfoundedDataException;
 
 class VirtualDataManagerTests {
 
 	@Test
-	void getAllDataTest() throws IOException, UnCorrectDataException {
+	void getAllDataTest() throws IOException, UncorrectDataException {
 		File file = new File("vdmTest.txt");
 		VirtualDataManager manager = initializeDM(file, "<key1>:<value1>\r\n<key2>:<value2>\r\n<key1>:<value3>\r\n");
 		
@@ -36,7 +36,7 @@ class VirtualDataManagerTests {
 	}
 	
 	@Test
-	void getDataTest() throws IOException, UnCorrectDataException {
+	void getDataTest() throws IOException, UncorrectDataException {
 		File file = new File("vdmTest.txt");
 		VirtualDataManager manager = initializeDM(file, "<key1>:<value1>\r\n<key2>:<value2>\r\n<key1>:<value3>\r\n");
 		
@@ -48,7 +48,7 @@ class VirtualDataManagerTests {
 	
 
 	@Test
-	void clearDataTest() throws IOException, UnCorrectDataException {
+	void clearDataTest() throws IOException, UncorrectDataException {
 		File file = new File("vdmTest.txt");
 		VirtualDataManager manager = initializeDM(file, "<key1>:<value1>\r\n<key2>:<value2>\r\n<key1>:<value3>\r\n");
 		
@@ -62,7 +62,7 @@ class VirtualDataManagerTests {
 	}
 	
 	@Test
-	void writeDataTest() throws IOException, UnCorrectDataException {
+	void writeDataTest() throws IOException, UncorrectDataException {
 		File file = new File("vdmTest.txt");
 		VirtualDataManager manager = initializeDM(file, "");
 		
@@ -76,7 +76,7 @@ class VirtualDataManagerTests {
 	}
 	
 	@Test
-	void removeDataTest() throws IOException, UnCorrectDataException, UnfoundedDataException {
+	void removeDataTest() throws IOException, UncorrectDataException, UnfoundedDataException {
 		File file = new File("vdmTest.txt");
 		VirtualDataManager manager = initializeDM(file, "<key1>:<value1>\r\n<key2>:<value2>\r\n<key1>:<value3>\r\n<key2>:<value4>\r\n");
 		
@@ -108,7 +108,7 @@ class VirtualDataManagerTests {
 		return fileText;
 	}
 	
-	private VirtualDataManager initializeDM(File file, String data) throws IOException, UnCorrectDataException
+	private VirtualDataManager initializeDM(File file, String data) throws IOException, UncorrectDataException
 	{
 		try (FileWriter writer = new FileWriter(file))
 		{

@@ -18,7 +18,7 @@ import dataManagers.FileDataReader;
 import dataManagers.FileDataWriter;
 import dataManagers.VirtualDataManager;
 import exceptions.ManyTelBotsException;
-import exceptions.UnCorrectDataException;
+import exceptions.UncorrectDataException;
 import exceptions.UnfoundedDataException;
 import structures.UserInfo;
 import telegram_bot.MyAmazingBot;
@@ -51,7 +51,7 @@ public class Main {
 		} catch (IOException e) {
 			System.out.println("File working error with");
 			return;
-		} catch (UnCorrectDataException e) {
+		} catch (UncorrectDataException e) {
 			System.out.println("Data is uncorrect: " + e.getMessage());
 			return;
 		}
@@ -76,6 +76,7 @@ public class Main {
 		}
 	}
 
+	//создает новых толкеров для добавившихся пользователей
 	public static List<MessageController> generateTalkers(List<UserInfo> users, MessageController original) {
 		List<MessageController> talkers = new ArrayList<MessageController>();
 		
@@ -86,21 +87,27 @@ public class Main {
 		return talkers;
 	}
 	
+	//добавляет новых толкеров идентичных original, но с другим пользователем
 	public static void updateSameUsers(UserControl bot, List<MessageController> talkers, MessageController original){
 		if (bot.areNewUsers()) {
 			talkers.addAll(generateTalkers(bot.getNewUsers(), original));
 		}
 	}
 	
+	//обработка новых сообщений и ответ толкеров
 	public static void talk(List<MessageController> talkers) {
 		for (MessageController talker : talkers) {
+			//выносим алгоритм соответствующего толкера
 			Algorithm alg = talker.getAlgorithm();
+			
 			
 			List<String> messages = new ArrayList<String>();
 			if (talker.areNewMessages()) {
+				//если пришли новые сообщения, то добавим их в массив
 				messages = talker.getNewMessages();
 			}
 			
+			//обработаем каждое сообщение и если алгоритм готов ответить отправим сообщение через толкера
 			for (String mes : messages) {
 				alg.readMessage(mes);
 				while (alg.isReadyToGenerate())

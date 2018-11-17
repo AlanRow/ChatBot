@@ -12,13 +12,13 @@ import algs.ListWriteAlg;
 import dataManagers.FileDataReader;
 import dataManagers.FileDataWriter;
 import dataManagers.VirtualDataManager;
-import exceptions.UnCorrectDataException;
+import exceptions.UncorrectDataException;
 import structures.UserInfo;
 
 class ListWriteAlgTests {
 
 	@Test
-	void willComeTest() throws IOException, UnCorrectDataException {
+	void willComeTest() throws IOException, UncorrectDataException {
 		File file = new File("lwaTest.txt");
 		ListWriteAlg alg = initializeLWA(file, new UserInfo(0, "user"), "");
 		
@@ -30,7 +30,7 @@ class ListWriteAlgTests {
 	}
 	
 	@Test
-	void wontComeTest() throws IOException, UnCorrectDataException {
+	void wontComeTest() throws IOException, UncorrectDataException {
 		File file = new File("lwaTest.txt");
 		ListWriteAlg alg = initializeLWA(file, new UserInfo(0, "user"), "<0>:<user>\r\n");
 		
@@ -42,7 +42,7 @@ class ListWriteAlgTests {
 	}
 	
 	@Test
-	void tautologyTest() throws IOException, UnCorrectDataException {
+	void tautologyTest() throws IOException, UncorrectDataException {
 		File file = new File("lwaTest.txt");
 		ListWriteAlg alg = initializeLWA(file, new UserInfo(0, "user"), "<0>:<user>\r\n");
 		
@@ -60,7 +60,7 @@ class ListWriteAlgTests {
 	}
 	
 	@Test
-	public void showTest() throws IOException, UnCorrectDataException {
+	public void showTest() throws IOException, UncorrectDataException {
 		File file = new File("lwaTest.txt");
 		ListWriteAlg alg = initializeLWA(file, new UserInfo(0, "user"), "<0>:<user1>\r\n<1>:<user2>\r\n");
 		
@@ -70,7 +70,7 @@ class ListWriteAlgTests {
 		file.delete();
 	}
 	
-	private ListWriteAlg initializeLWA(File file, UserInfo user, String data) throws IOException, UnCorrectDataException
+	private ListWriteAlg initializeLWA(File file, UserInfo user, String data) throws IOException, UncorrectDataException
 	{
 		try (FileWriter writer = new FileWriter(file))
 		{

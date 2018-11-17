@@ -5,6 +5,7 @@ import java.io.*;
 
 public class FileDataWriter implements DataWriter {
 
+	//файл для записи
 	private File file;
 	
 	public FileDataWriter (String fileName) throws IOException {
@@ -14,6 +15,9 @@ public class FileDataWriter implements DataWriter {
 			file.createNewFile();
 	}
 	
+	//*НУЖНЫ ПРАВКИ*
+	//нужно изменить интерфейс DataWriter, заменив этот метод на writeAllData(Map <String, List<String>>)
+	//который перезапишет весь файл, т. к. 
 	public void writeData(String key, String data) throws IOException {
 		try (FileWriter writer = new FileWriter(file, true))
 		{

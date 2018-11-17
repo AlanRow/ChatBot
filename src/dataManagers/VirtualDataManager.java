@@ -27,7 +27,7 @@ public class VirtualDataManager extends DataManager{
 	//используетс€ лишь при создании класса дл€ подгрузки информации. ¬ообще говор€ может быть отличен от сохран€емого.
 	private DataReader dataSource;
 
-	public VirtualDataManager(DataReader source, DataWriter saver) throws IOException, UnCorrectDataException
+	public VirtualDataManager(DataReader source, DataWriter saver) throws IOException, UncorrectDataException
 	{
 		dataSaver = saver;
 		dataSource = source;
@@ -35,7 +35,7 @@ public class VirtualDataManager extends DataManager{
 		updateData();
 	}
 	
-	public VirtualDataManager(String fileName) throws IOException, UnCorrectDataException
+	public VirtualDataManager(String fileName) throws IOException, UncorrectDataException
 	{
 		dataSaver = new FileDataWriter(fileName);
 		dataSource = new FileDataReader(fileName);

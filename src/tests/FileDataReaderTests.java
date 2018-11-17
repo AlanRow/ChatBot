@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import java.io.*;
 import dataManagers.FileDataReader;
-import exceptions.UnCorrectDataException;
+import exceptions.UncorrectDataException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.Map;
 class FileDataReaderTests {
 	
 	@Test
-	void getAllDataTest() throws IOException, UnCorrectDataException {
+	void getAllDataTest() throws IOException, UncorrectDataException {
 		
 		File reading = new File("readTest.txt");
 		try (FileWriter writer = new FileWriter(reading))

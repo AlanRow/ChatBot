@@ -7,7 +7,7 @@ import bot_interfaces.Algorithm;
 import bot_interfaces.DataCorrector;
 import bot_interfaces.DataReader;
 import bot_interfaces.DataSearcher;
-import exceptions.UnCorrectDataException;
+import exceptions.UncorrectDataException;
 import exceptions.UnfoundedDataException;
 import structures.UserInfo;
 
@@ -39,7 +39,7 @@ public class ListWriteAlg implements Algorithm {
 		} catch (IOException e) {
 			haveUnsolvedExceptions = true;
 			answer = "Sorry, file working is incorrect...";
-		} catch (UnCorrectDataException e) {
+		} catch (UncorrectDataException e) {
 			haveUnsolvedExceptions = true;
 			answer = "Sorry, the data is incorrect...";
 		}
@@ -87,7 +87,7 @@ public class ListWriteAlg implements Algorithm {
 					for (String extended : source.getAllData().keySet()) {
 						answer += source.getData(extended).get(0) + "\n";
 					}
-				} catch (UnCorrectDataException e) {
+				} catch (UncorrectDataException e) {
 					errorMessage = "Sorry, data is broken.";
 					haveUnsolvedExceptions = true;
 				}
