@@ -2,21 +2,25 @@ package algs;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import bot_interfaces.Algorithm;
 import bot_interfaces.DataCorrector;
+import bot_interfaces.DataManager;
 import bot_interfaces.DataReader;
 import bot_interfaces.DataSearcher;
 import exceptions.UncorrectDataException;
 import exceptions.UnfoundedDataException;
+import structures.Meeting;
 import structures.UserInfo;
 
 //алгоритм работы со списком встречи
 public class ListWriteAlg implements Algorithm {
-	private DataCorrector listWriter;
-	private DataSearcher source;
+	
+	private Algorithm main;//текущий работающий алгоритм user или его наследник
+	
+	private Map<Integer, Meeting> meetingsMap;
 	private UserInfo user;
-	private boolean willCome;
 	private boolean isReady;
 	private String info;
 	private boolean haveUnsolvedExceptions;
@@ -24,9 +28,18 @@ public class ListWriteAlg implements Algorithm {
 	private String answer;
 	String errorMessage;
 
-	public ListWriteAlg(DataCorrector usersDataWriter, DataSearcher extSource, UserInfo user) {
-		listWriter = usersDataWriter;
-		source = extSource;
+	public ListWriteAlg(Map<Integer, Meeting> meetings, UserInfo user) {
+		meetingsMap = meetings;
+		
+		for (Meeting meet : meetings.values()) {
+			main = meet.getMember(user);
+			if (main != null)
+				break;
+		}
+		if (main == null)
+			main = new UserAlg(this, meetings, user, 
+					"Приветствую, это бот для ведения списка встречи. Чтобы узнать больше введите \"\"");
+		
 		this.user = user;
 		haveUnsolvedExceptions = false;
 		stoppedWork = false;
@@ -34,21 +47,23 @@ public class ListWriteAlg implements Algorithm {
 		info = "";
 		answer = "";
 		errorMessage = "";
-		
-		try {
-			willCome = source.getAllData().containsKey(Long.toString(user.getId()));
-		} catch (IOException e) {
-			haveUnsolvedExceptions = true;
-			answer = "Sorry, file working is incorrect...";
-		} catch (UncorrectDataException e) {
-			haveUnsolvedExceptions = true;
-			answer = "Sorry, the data is incorrect...";
-		}
 	}
 	
-	public ListWriteAlg(DataCorrector usersDataWriter, DataSearcher extSource, UserInfo user, String inform) {
-		this(usersDataWriter, extSource, user);
+	public ListWriteAlg(Map<Integer, Meeting> meetings, UserInfo user, String inform) {
+		this(meetings, user);
 		info = inform;
+	}
+	
+	public Map<Integer, Meeting> getMeetingsMap(){
+		return meetingsMap;
+	}
+	
+	/*public void switchToUser(String startMessage) {
+		main = new UserAlg(this, meetingsMap, startMessage);
+	}*/
+	
+	public void switchMainAlg(Algorithm alg) {
+		main = alg;
 	}
 	
 	//обработка пришедшего сообщения
@@ -59,9 +74,31 @@ public class ListWriteAlg implements Algorithm {
 		if (haveUnsolvedExceptions)
 			return;
 		
-		try {
+		//try {
+			main.readMessage(message);//основной алгоритм читает сообщение
+			
+			switch (message.toLowerCase()) {
+				//выводит информцию о встрече
+				case "info":
+					if (!info.equals(""))
+						answer = info;
+					else
+						answer = "Sorry, there isn't information about this meeting.";
+					break;
+					//выводит информацию о боте
+				case "/start":
+					answer = "This bot makes list of your meeting. If you want to know more, please write \"help\"";
+					break;
+				//показ списка команд
+				case "help":
+					answer = "Commands list:\n" +
+								"help - show this help-list\n" +
+								"info - show the information about meeting (name, time, place, etc.)\n";
+						break;
+			}
+			
 			//обработка комманд
-			switch (message.toLowerCase())
+			/*switch (message.toLowerCase())
 			{
 				//запись пользователя в список
 				case "will":
@@ -122,31 +159,37 @@ public class ListWriteAlg implements Algorithm {
 				default:
 					isReady = false;
 					break;
-			}
-		} 
-		catch (IOException ex) {
+			}*/
+		//}
+		/*catch (IOException ex) {
 			haveUnsolvedExceptions = true;
 			errorMessage = "Sorry, file working is incorrect...";
-		}
+		}*/
 		
 		
 		
 	}
 
 	public boolean isReadyToGenerate() {
-		return isReady;
+		return isReady || main.isReadyToGenerate();//если алгоритм по умолчанию или текущий готов ответить, то отвечать
 	}
 
 	public String generateMessage() {
 		isReady = false;
 		
+		//отправляет сообщение от основного алгоритма
+		//реакция основного алгоритма считается приоритетной
+		if (main.isReadyToGenerate())
+			return main.generateMessage();
+		
 		if (haveUnsolvedExceptions)
 			return errorMessage;
+		
 		return answer;
 	}
 
 	public Algorithm genererateSame(UserInfo another) {
-		return new ListWriteAlg(listWriter, source, another);
+		return new ListWriteAlg(meetingsMap, another);
 	}
 	
 	
