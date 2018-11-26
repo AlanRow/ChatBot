@@ -2,7 +2,9 @@ package bot_01;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 
@@ -20,14 +22,10 @@ import dataManagers.VirtualDataManager;
 import exceptions.ManyTelBotsException;
 import exceptions.UncorrectDataException;
 import exceptions.UnfoundedDataException;
+import structures.Meeting;
 import structures.UserInfo;
 import telegram_bot.MyAmazingBot;
 import telegram_bot.TelegramTalker;
-
-import org.telegram.telegrambots.ApiContextInitializer;
-import org.telegram.telegrambots.TelegramBotsApi;
-import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.exceptions.TelegramApiException;
 //import src.MyAmazingBot;
 import algs.*;
 
@@ -56,8 +54,20 @@ public class Main {
 			return;
 		}
 		
+		//meetings map creating
+		Map<Integer, Meeting> meetings = new HashMap<Integer, Meeting>();
+		Meeting meet = null;
+		try {
+				meet = new Meeting(1, dataManager);
+		} catch (UncorrectDataException ex) {
+			System.out.println("Something wrong with data: " + ex.getMessage());
+		} catch (IOException ex) {
+			System.out.println("Something wrong with file-working: " + ex.getMessage());
+		}
+		meetings.put(1, meet);
+		
 		//создание шаблона алгоритма
-		Algorithm mainAlg = new ListWriteAlg(dataManager, dataManager, new UserInfo(0, "user"));
+		Algorithm mainAlg = new ListWriteAlg(meetings, new UserInfo(0, "user"));
 		//создание шаблона индивидуального контроллера сообщений
 		MessageController mainTalker = new TelegramTalker(new UserInfo(0, "user"), mainAlg, (MyAmazingBot) bot);
 		//список всех контроллеров, отдельный для каждого пользователя

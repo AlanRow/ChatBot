@@ -23,6 +23,7 @@ public class UserAlg implements Algorithm{
 	
 	public UserAlg(ListWriteAlg alg, Map<Integer, Meeting> meetings, UserInfo user, String startMessage) {
 		listAlg = alg;
+		this.user = user;
 		answer = startMessage;
 		meetingsMap = meetings;
 		isReady = (!"".equals(startMessage));
@@ -34,9 +35,12 @@ public class UserAlg implements Algorithm{
 		switch (message.toLowerCase()) {
 			case "will":
 				Meeting meet = meetingsMap.get(1);
-				MemberAlg asMember = new MemberAlg(listAlg, meet, user, "Ok, I've recorded you.");
-				meet.addMember(asMember);
-				listAlg.switchMainAlg(asMember);
+				MemberAlg asMember = new MemberAlg(meet, user, "Ok, I've recorded you.");
+				try {
+					meet.addMember(asMember, listAlg);
+				} catch (IOException | UncorrectDataException e) {
+					answer = "Sorry, the file-working failed.";
+				}
 				break;
 			case "help":
 				answer = "Commands list:\n" +
@@ -52,6 +56,7 @@ public class UserAlg implements Algorithm{
 	}
 
 	public String generateMessage() {
+		isReady = false;
 		return answer;
 	}
 

@@ -33,37 +33,46 @@ public class FileDataReader implements DataReader {
 		//используй UncorrectDataException
 		try(FileReader reader = new FileReader(file))
 		{
-			String key = "";
 			//читает пока не дойдет до конца файла
-			while ((key = readWord(reader)) != null) //readWord читает целое слово внутри <...>
+			while (reader.read() > 0) //reads supporting symbol, which shows that there is next line
 			{
-				if ((char)reader.read() != ':')//если после слова не стоит ':', то кидаем исключение
-					throw new UncorrectDataException("The file <" + file.getName() + "> hasn't the ':' after key.");
-				String value = readWord(reader);
-				
-				//если после ключа не идет значение кидаем исключение
-				if (value == null)
-					throw new UncorrectDataException("The file <" + file.getName() + "> hasn't value for key.");
-				
-				//добавляем новый элемент в отображение для вывода
-				if (!keyMap.containsKey(key))
-					keyMap.put(key, new ArrayList<String>());
-				
-				keyMap.get(key).add(value);
-				
-				//проверяем перенос строки в конце набора
-				if ((char)reader.read() != '\r')
-					throw new UncorrectDataException("The file <" + file.getName() + "> hasn't \\r.");
-			
-				if ((char)reader.read() != '\n')
-					throw new UncorrectDataException("The file <" + file.getName() + "> hasn't \\n.");
+				String key = readWord(reader);//reads the key
+				List<String> value = readValues(reader);//reads the some number of values
+				keyMap.put(key, value);//adds line to map
 			}
 			
-			return keyMap;
+			return keyMap;//returns map
 		}
 	}
 
-	private static String readWord(FileReader reader) throws IOException, UncorrectDataException
+	private List<String> readValues(FileReader reader) throws IOException, UncorrectDataException {
+		int code;
+		List<String> values = new ArrayList<String>();
+		
+		//reads until end of line
+		while ((code = reader.read()) > 0 && ((char)code) != '\r') {
+			
+			//checks the existing of delimiter-character
+			if ((char)code != ':')
+				throw new UncorrectDataException("The data in <" + file.getName() + "> is uncorrect: unfound \':\' - delimiter.");
+			
+			//reads next value
+			String word = readWord(reader);
+			if (word == null)
+				throw new UncorrectDataException("The data in <" + file.getName() + "> is uncorrect: there isn't \\r\\n in the end of file.");
+			
+			//adds value to list
+			values.add(word);
+		}
+		
+		//checks the correct final of the line
+		if ((code = reader.read()) <= 0 || ((char)code) != '\n')
+			throw new UncorrectDataException("The data in <" + file.getName() + "> is uncorrect: there isn't \\n in the end of line.");
+		
+		return values;
+	}
+	
+	private String readWord(FileReader reader) throws IOException, UncorrectDataException
 	{
 		int code;
 		String word = "";
@@ -72,7 +81,7 @@ public class FileDataReader implements DataReader {
 			return null;
 		
 		if ((char)code != '<')
-			throw new UncorrectDataException("The word hasn't '<' at the start, but nas a '" + (char)code + "'.");
+			throw new UncorrectDataException("The word in <" + file.getName() + "> hasn't '<' at the start, but nas a '" + (char)code + "'.");
 		
 		
 		while ((code = reader.read()) > 0 && (char)code != '>') {

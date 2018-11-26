@@ -7,8 +7,8 @@ import structures.UserInfo;
 
 public class HostAlg extends MemberAlg {
 	
-	public HostAlg(ListWriteAlg alg, Meeting meet, UserInfo user, String startMessage) {
-		super(alg, meet, user, startMessage);
+	public HostAlg(/*ListWriteAlg alg,*/ Meeting meet, UserInfo user, String startMessage) {
+		super(/*alg,*/ meet, user, startMessage);
 	}
 	
 	@Override

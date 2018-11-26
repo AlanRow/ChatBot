@@ -15,9 +15,9 @@ public class UserInfo {
 		return userName;
 	}
 	
-	public UserInfo(int userId, String userName) {
+	public UserInfo(long userId, String userName) {
 		id = userId;
-		userName = userName;
+		this.userName = userName;
 	}
 	
 	public UserInfo(User user) {

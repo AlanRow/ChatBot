@@ -113,11 +113,13 @@ public class MyAmazingBot extends TelegramLongPollingBot implements UserControl{
     @Override
     public String getBotUsername() {
         return "JohhoBot";
+    	//return "SimSimi_hell_Bot";
     }
 
     @Override
     public String getBotToken() {
         return "650267550:AAHdCM9pFFKe8UKs8mhZ22a99Jt7OoNOSY4";
+    	//return "652391891:AAEQ5IbXbfTbHXIgRCuty6C6xb7F-yszvmc";
     }
     
     //есть кто новый?

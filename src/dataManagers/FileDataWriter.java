@@ -2,6 +2,8 @@ package dataManagers;
 
 import bot_interfaces.DataWriter;
 import java.io.*;
+import java.util.List;
+import java.util.Map;
 
 public class FileDataWriter implements DataWriter {
 
@@ -15,14 +17,20 @@ public class FileDataWriter implements DataWriter {
 			file.createNewFile();
 	}
 	
-	//*НУЖНЫ ПРАВКИ*
-	//нужно изменить интерфейс DataWriter, заменив этот метод на writeAllData(Map <String, List<String>>)
-	//который перезапишет весь файл, т. к. 
-	public void writeData(String key, String data) throws IOException {
-		try (FileWriter writer = new FileWriter(file, true))
+	//writes all map to file in the next form: $<key>:<value1>:<value2>:...:<valueN>
+	public void writeAllData(Map<String, List<String>> data) throws IOException {
+		try (FileWriter writer = new FileWriter(file, false))
 		{
-			writer.write("<" + key + ">:<" + data + ">");
-			writer.append("\r\n");
+			for (Map.Entry<String, List<String>> pair : data.entrySet()) {
+				//'$' - the supporting character, which says that there is start of new line
+				writer.append("$<" + pair.getKey() + ">");
+				
+				for (String val : pair.getValue())
+					writer.append(":<" + val + ">");
+				
+				//end of line
+				writer.append("\r\n");
+			}
 			writer.flush();
 		}
 	}
@@ -34,5 +42,7 @@ public class FileDataWriter implements DataWriter {
 			writer.flush();
 		}
 	}
+
+
 	
 }

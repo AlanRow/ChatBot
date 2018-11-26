@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
@@ -13,6 +15,7 @@ import dataManagers.FileDataReader;
 import dataManagers.FileDataWriter;
 import dataManagers.VirtualDataManager;
 import exceptions.UncorrectDataException;
+import structures.Meeting;
 import structures.UserInfo;
 
 class ListWriteAlgTests {
@@ -32,11 +35,11 @@ class ListWriteAlgTests {
 	@Test
 	void wontComeTest() throws IOException, UncorrectDataException {
 		File file = new File("lwaTest.txt");
-		ListWriteAlg alg = initializeLWA(file, new UserInfo(0, "user"), "<0>:<user>\r\n");
+		ListWriteAlg alg = initializeLWA(file, new UserInfo(0, "Alan"), "$<0>:<Alan>:<1>:<member>\r\n");
 		
 		alg.readMessage("WoNt");
 		assertEquals(true, alg.isReadyToGenerate());
-		assertEquals("Ok, I've struck off you", alg.generateMessage());
+		assertEquals("Ok, I've struck off you.", alg.generateMessage());
 		
 		file.delete();
 	}
@@ -44,17 +47,11 @@ class ListWriteAlgTests {
 	@Test
 	void tautologyTest() throws IOException, UncorrectDataException {
 		File file = new File("lwaTest.txt");
-		ListWriteAlg alg = initializeLWA(file, new UserInfo(0, "user"), "<0>:<user>\r\n");
+		ListWriteAlg alg = initializeLWA(file, new UserInfo(0, "Alan"), "$<0>:<Alan>:<1>:<member>\r\n");
 		
 		alg.readMessage("will");
 		assertEquals(true, alg.isReadyToGenerate());
-		assertEquals("Yes, I've just understand.", alg.generateMessage());
-		
-		alg.readMessage("WONT");
-		alg.generateMessage();
-		alg.readMessage("WonT");
-		assertEquals(true, alg.isReadyToGenerate());
-		assertEquals("You haven't recorded, yet.", alg.generateMessage());
+		assertEquals("You've just been a member.", alg.generateMessage());
 		
 		file.delete();
 	}
@@ -62,10 +59,10 @@ class ListWriteAlgTests {
 	@Test
 	public void showTest() throws IOException, UncorrectDataException {
 		File file = new File("lwaTest.txt");
-		ListWriteAlg alg = initializeLWA(file, new UserInfo(0, "user"), "<0>:<user1>\r\n<1>:<user2>\r\n");
+		ListWriteAlg alg = initializeLWA(file, new UserInfo(1, "Nick"), "$<0>:<Alan>:<1>:<member>\r\n$<1>:<Nick>:<1>:<host>\r\n");
 		
 		alg.readMessage("ShOw");
-		assertEquals("user1\nuser2\n", alg.generateMessage());
+		assertEquals("Alan\nNick\n", alg.generateMessage());
 		
 		file.delete();
 	}
@@ -79,7 +76,9 @@ class ListWriteAlgTests {
 		}
 		
 		VirtualDataManager manager = new VirtualDataManager(file.getName());
+		Map<Integer, Meeting> meetings = new HashMap<Integer, Meeting>();
+		meetings.put(1, new Meeting(1, manager));
 		
-		return new ListWriteAlg(manager, manager, user);
+		return new ListWriteAlg(meetings, user);
 	}
 }

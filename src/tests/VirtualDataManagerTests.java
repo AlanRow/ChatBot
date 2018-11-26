@@ -19,7 +19,7 @@ import exceptions.UnfoundedDataException;
 
 class VirtualDataManagerTests {
 
-	@Test
+	/*@Test
 	void getAllDataTest() throws IOException, UncorrectDataException {
 		File file = new File("vdmTest.txt");
 		VirtualDataManager manager = initializeDM(file, "<key1>:<value1>\r\n<key2>:<value2>\r\n<key1>:<value3>\r\n");
@@ -33,24 +33,82 @@ class VirtualDataManagerTests {
 		assertEquals(data.get("key1").get(1), "value3");
 		
 		file.delete();
-	}
+	}*/
 	
 	@Test
-	void getDataTest() throws IOException, UncorrectDataException {
+	void getDataTest() throws IOException, UncorrectDataException, UnfoundedDataException {
 		File file = new File("vdmTest.txt");
-		VirtualDataManager manager = initializeDM(file, "<key1>:<value1>\r\n<key2>:<value2>\r\n<key1>:<value3>\r\n");
+		file.delete();
+		VirtualDataManager manager = initializeDM(file, "$<key1>:<value11>:<value12>\r\n$<key2>:<value21>\r\n");
 		
-		assertEquals(manager.getData("key1").get(0), "value1");
-		assertEquals(manager.getData("key2").get(0), "value2");
-		assertEquals(manager.getData("key1").get(1), "value3");
+		if (manager.getData("key1") == null)
+			System.out.println("key is null!!!");;
+		
+		assertEquals("key1", manager.getData("key1").key);
+		assertEquals("key2", manager.getData("key2").key);
+		
+		assertEquals(2, manager.getData("key1").values.size());
+		assertEquals(1, manager.getData("key2").values.size());
+		
+		assertEquals("value11", manager.getData("key1").values.get(0));
+		assertEquals("value12", manager.getData("key1").values.get(1));
+		assertEquals("value21", manager.getData("key2").values.get(0));
+		
+		try {
+			manager.getData("key3");
+			assertEquals(true, false);
+		}
+		catch (UnfoundedDataException ex) {}
+		
+		file.delete();
+	}
+
+	@Test
+	void writeDataTest() throws IOException, UncorrectDataException, UnfoundedDataException {
+		File file = new File("vdmTest.txt");
+		VirtualDataManager manager = initializeDM(file, "$<key1>:<value11>:<value12>\r\n$<key2>:<value21>\r\n");
+		
+		manager.writeData("key2", 1, "changeValue21");
+		manager.writeData("key1", 2, "changeValue12");
+		
+		assertEquals("changeValue21", manager.getData("key2").values.get(0));
+		assertEquals("changeValue12", manager.getData("key1").values.get(1));
+		
+		try {
+			manager.writeData("key3", 1, "someVal");
+			assertEquals(true, false);
+		}
+		catch (UnfoundedDataException ex) {}
+		
+		try {
+			manager.writeData("key2", 2, "someVal");
+			assertEquals(true, false);
+		}
+		catch (UnfoundedDataException ex) {}
+		
 		file.delete();
 	}
 	
-
+	@Test
+	void removeDataTest() throws IOException, UncorrectDataException, UnfoundedDataException {
+		File file = new File("vdmTest.txt");
+		VirtualDataManager manager = initializeDM(file, "$<key1>:<value11>:<value12>\r\n$<key2>:<value21>\r\n");
+		
+		manager.removeData("key1");
+		
+		try {
+			manager.getData("key1");
+			assertEquals(true, false);
+		}
+		catch (UnfoundedDataException ex) {}
+		
+		file.delete();
+	}
+	
 	@Test
 	void clearDataTest() throws IOException, UncorrectDataException {
 		File file = new File("vdmTest.txt");
-		VirtualDataManager manager = initializeDM(file, "<key1>:<value1>\r\n<key2>:<value2>\r\n<key1>:<value3>\r\n");
+		VirtualDataManager manager = initializeDM(file, "$<key1>:<value11>:<value12>\r\n$<key2>:<value21>\r\n");
 		
 		manager.clearData();
 		try (FileReader reader = new FileReader(file))
@@ -61,53 +119,6 @@ class VirtualDataManagerTests {
 		file.delete();
 	}
 	
-	@Test
-	void writeDataTest() throws IOException, UncorrectDataException {
-		File file = new File("vdmTest.txt");
-		VirtualDataManager manager = initializeDM(file, "");
-		
-		manager.writeData("someKey","someValue");
-		try (FileReader reader = new FileReader(file))
-		{
-			assertEquals("<someKey>:<someValue>\r\n", readFile(reader));
-		}
-		
-		file.delete();
-	}
-	
-	@Test
-	void removeDataTest() throws IOException, UncorrectDataException, UnfoundedDataException {
-		File file = new File("vdmTest.txt");
-		VirtualDataManager manager = initializeDM(file, "<key1>:<value1>\r\n<key2>:<value2>\r\n<key1>:<value3>\r\n<key2>:<value4>\r\n");
-		
-		manager.removeData("key1");
-		try (FileReader reader = new FileReader(file))
-		{
-			assertEquals("<key2>:<value2>\r\n<key2>:<value4>\r\n", readFile(reader));
-		}
-		
-		manager.removeData("key2", "value2");
-		try (FileReader reader = new FileReader(file))
-		{
-			assertEquals("<key2>:<value4>\r\n", readFile(reader));
-		}
-		
-		file.delete();
-	}
-	
-	private static String readFile(FileReader reader) throws IOException
-	{
-		String fileText = "";
-		int code;
-		
-		while ((code = reader.read()) >= 0)
-		{
-			fileText += (char) code;
-		}
-		
-		return fileText;
-	}
-	
 	private VirtualDataManager initializeDM(File file, String data) throws IOException, UncorrectDataException
 	{
 		try (FileWriter writer = new FileWriter(file))
@@ -116,6 +127,6 @@ class VirtualDataManagerTests {
 			writer.flush();
 		}
 		
-		return new VirtualDataManager(new FileDataReader(file.getName()), new FileDataWriter(file.getName()));
+		return new VirtualDataManager(file.getName());
 	}
 }

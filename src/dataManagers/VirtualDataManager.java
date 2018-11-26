@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import exceptions.*;
+import structures.InfoPair;
 
 /*класс дл€ хранени€ и редактировани€ относительно небольшой базы данных по 
 типу ключ-значени€ в виде хэш-таблицы. »нкапсулирует всю работу с информацией.
@@ -43,29 +44,25 @@ public class VirtualDataManager extends DataManager{
 		data = dataSource.getAllData();
 		updateData();
 	}
-	
-	//получает все данные по ключу
-	public List<String> getData(String key) {
-		return data.get(key);
-	}
 
 	//получает Map всех данных
 	public Map<String, List<String>> getAllData() {
 		return data;
 	}
-
-	//записывает новые данные
-	public void writeData(String key, String newData) throws IOException {
-		if (data.containsKey(key))
-			data.get(key).add(newData);
-		else
-		{
-			List<String> newDataList = new ArrayList<String>();
-			newDataList.add(newData);
-			data.put(key, newDataList);
-		}
-		
+	
+	//writes to file data-map
+	public void writeAllData(Map<String, List<String>> data) throws IOException {
+		this.data = data;
 		updateData();
+	}
+
+	//return the pair of key-value data
+	public InfoPair getData(String key) throws UnfoundedDataException {
+		List<String> value = data.get(key);
+		if (value == null)
+			throw new UnfoundedDataException("The data with key <" + key + "> wasn't found in the file.");
+		
+		return new InfoPair(key, value);
 	}
 
 	//очищает данные в файле и в Map'e
@@ -79,28 +76,12 @@ public class VirtualDataManager extends DataManager{
 		data.remove(key);
 		updateData();
 	}
-
-	//убирает выбранное ключ-значение
-	public void removeData(String key, String removingData) throws UnfoundedDataException, IOException {
-		if (!data.containsKey(key))
-			throw new UnfoundedDataException("The key " + key + " has not found in data.");
-		data.get(key).remove(removingData);
-		
-		updateData();
-	}
 	
 	//метод, сохран€ющий изменени€ в базе данных
 	private void updateData() throws IOException
 	{
-		dataSaver.clearData();
-		
-		for (String key : data.keySet())
-		{
-			for (String value : data.get(key))
-			{
-				dataSaver.writeData(key, value);
-			}
-		}
+		dataSaver.writeAllData(data);
 	}
+
 	
 }

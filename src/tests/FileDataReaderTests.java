@@ -1,5 +1,6 @@
 package tests;
 
+import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
@@ -19,20 +20,74 @@ class FileDataReaderTests {
 		File reading = new File("readTest.txt");
 		try (FileWriter writer = new FileWriter(reading))
 		{
-			writer.write("<key1>:<value1>\r\n<key2>:<value2>\r\n<key1>:<value3>\r\n");
+			writer.write("$<key1>:<value11>:<value12>\r\n$<key2>:<value21>\r\n");
 			writer.flush();
 		}
 		
 		FileDataReader dataReader = new FileDataReader(reading.getName());
 		Map<String, List<String>> data = dataReader.getAllData();
 		
-		assertEquals("key1", data.keySet().toArray()[0]);
-		assertEquals("key2", data.keySet().toArray()[1]);
-		assertEquals("value1", data.get("key1").get(0));
-		assertEquals("value2", data.get("key2").get(0));
-		assertEquals("value3", data.get("key1").get(1));
+		assertEquals(true, data.containsKey("key1"));
+		assertEquals(true, data.containsKey("key2"));
+		
+		assertEquals(2, data.get("key1").size());
+		assertEquals(1, data.get("key2").size());
+		
+		assertEquals("value11", data.get("key1").get(0));
+		assertEquals("value12", data.get("key1").get(1));
+		assertEquals("value21", data.get("key2").get(0));
 		
 		reading.delete();
+	}
+	
+	@Test
+	void UncorrectDataTest() throws IOException {
+
+		File error1 = new File("readTest1.txt");
+		try (FileWriter writer = new FileWriter(error1))
+		{
+			writer.write("sdfgdsfgdsfgas");
+			writer.flush();
+		}
+		
+		File error2 = new File("readTest2.txt");
+		try (FileWriter writer = new FileWriter(error2))
+		{
+			writer.write("<key1>:<value11>\r\n");
+			writer.flush();
+		}
+		
+		File error3 = new File("readTest3.txt");
+		try (FileWriter writer = new FileWriter(error3))
+		{
+			writer.write("$<key1>:<value11>:<value12>$<key2>:<value21>\\r\\n");
+			writer.flush();
+		}
+		
+		try {
+			new FileDataReader(error1.getName()).getAllData();
+			assertEquals(true, false);
+		}
+		catch (UncorrectDataException ex) {
+		}
+		
+		try {
+			new FileDataReader(error2.getName()).getAllData();
+			assertEquals(true, false);
+		}
+		catch (UncorrectDataException ex) {
+		}
+		
+		try {
+			new FileDataReader(error3.getName()).getAllData();
+			assertEquals(true, false);
+		}
+		catch (UncorrectDataException ex) {
+		}
+		
+		error1.delete();
+		error2.delete();
+		error3.delete();
 	}
 
 }
