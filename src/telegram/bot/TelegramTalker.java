@@ -1,11 +1,11 @@
-package telegram_bot;
+package telegram.bot;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 
-import bot_interfaces.Algorithm;
-import bot_interfaces.MessageController;
+import bot.interfaces.Algorithm;
+import bot.interfaces.MessageController;
 import exceptions.IllegalReadingException;
 import exceptions.IllegalSendingException;
 import structures.UserInfo;

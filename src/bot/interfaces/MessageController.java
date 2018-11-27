@@ -1,4 +1,4 @@
-package bot_interfaces;
+package bot.interfaces;
 
 import java.util.List;
 

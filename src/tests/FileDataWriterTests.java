@@ -3,7 +3,9 @@ package tests;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
-import dataManagers.FileDataWriter;
+
+import data.managers.FileDataWriter;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;

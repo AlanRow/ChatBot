@@ -2,7 +2,7 @@ package algs;
 
 import java.io.IOException;
 
-import bot_interfaces.Algorithm;
+import bot.interfaces.Algorithm;
 import exceptions.UncorrectDataException;
 import exceptions.UnfoundedDataException;
 import structures.Meeting;
@@ -29,7 +29,18 @@ public class MemberAlg implements Algorithm {
 	public void readMessage(String message) {
 		isReady = true;
 		
-		switch (message.toLowerCase()) {
+		if ("".equals(message)) {
+			isReady = false;
+			return;
+		}
+		
+		String[] commands = message.toLowerCase().split(" ");
+		if (commands.length == 0) {
+			isReady = false;
+			return;
+		}
+			
+		switch (commands[0]) {
 			case "will":
 				answer = "You've just been a member.";
 				break;
@@ -43,11 +54,27 @@ public class MemberAlg implements Algorithm {
 				answer = "Sorry, I haven't found you in file...";
 			}
 				break;
+			case "host":
+				if (meeting.isPublic() || (commands.length > 1 && meeting.checkPassword(commands[1]))) {
+					try {
+						meeting.appointAsHost(new HostAlg(meeting, user, "You've been a host."));
+					} catch (IOException | UncorrectDataException ex) {
+						answer = "Sorry, the file-working failed...";
+					} catch (UnfoundedDataException e) {
+						answer = "Sorry, I haven't found you in file...";
+					}
+				} else if(commands.length == 1) {
+					answer = "This meeting isn't public. Please, type the password, if you want to become a host.";
+				} else {
+					answer = "The password is uncorrect.";
+				}
+				break;
 			case "help":
 				answer = "Commands list:\n" +
 							"help - show this help-list\n" +
 							"info - show the information about meeting (name, time, place, etc.)\n" +
-							"wont - struck off you from list\n";
+							"wont - struck off you from list\n" +
+							"host [password] - for hosting this meeting\n";
 				break;
 			default:
 				isReady = false;

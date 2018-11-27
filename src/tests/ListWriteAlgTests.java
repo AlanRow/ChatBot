@@ -11,9 +11,9 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import algs.ListWriteAlg;
-import dataManagers.FileDataReader;
-import dataManagers.FileDataWriter;
-import dataManagers.VirtualDataManager;
+import data.managers.FileDataReader;
+import data.managers.FileDataWriter;
+import data.managers.VirtualDataManager;
 import exceptions.UncorrectDataException;
 import structures.Meeting;
 import structures.UserInfo;

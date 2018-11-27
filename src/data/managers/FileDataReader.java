@@ -1,6 +1,5 @@
-package dataManagers;
+package data.managers;
 
-import bot_interfaces.DataReader;
 import exceptions.UncorrectDataException;
 
 import java.io.*;
@@ -8,6 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import bot.interfaces.DataReader;
 
 //класс для чтения информации типа ключ-значение из файла
 public class FileDataReader implements DataReader {

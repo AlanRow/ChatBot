@@ -1,10 +1,4 @@
-package dataManagers;
-
-import bot_interfaces.DataCorrector;
-import bot_interfaces.DataManager;
-import bot_interfaces.DataReader;
-import bot_interfaces.DataSearcher;
-import bot_interfaces.DataWriter;
+package data.managers;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,6 +6,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import bot.interfaces.DataCorrector;
+import bot.interfaces.DataManager;
+import bot.interfaces.DataReader;
+import bot.interfaces.DataSearcher;
+import bot.interfaces.DataWriter;
 import exceptions.*;
 import structures.InfoPair;
 

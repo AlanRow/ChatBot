@@ -1,4 +1,4 @@
-package bot_01;
+package bot01;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -7,27 +7,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-
-import bot_interfaces.Algorithm;
-import bot_interfaces.DataCorrector;
-import bot_interfaces.DataManager;
-import bot_interfaces.DataReader;
-import bot_interfaces.DataWriter;
-import bot_interfaces.UserControl;
-import bot_interfaces.MessageController;
-import console_bot.*;
-import dataManagers.FileDataReader;
-import dataManagers.FileDataWriter;
-import dataManagers.VirtualDataManager;
 import exceptions.ManyTelBotsException;
 import exceptions.UncorrectDataException;
 import exceptions.UnfoundedDataException;
 import structures.Meeting;
 import structures.UserInfo;
-import telegram_bot.MyAmazingBot;
-import telegram_bot.TelegramTalker;
+import telegram.bot.MyAmazingBot;
+import telegram.bot.TelegramTalker;
 //import src.MyAmazingBot;
 import algs.*;
+import bot.interfaces.Algorithm;
+import bot.interfaces.DataCorrector;
+import bot.interfaces.DataManager;
+import bot.interfaces.DataReader;
+import bot.interfaces.DataWriter;
+import bot.interfaces.MessageController;
+import bot.interfaces.UserControl;
+import console.bot.*;
+import data.managers.FileDataReader;
+import data.managers.FileDataWriter;
+import data.managers.VirtualDataManager;
 
 public class Main {
 

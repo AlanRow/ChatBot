@@ -1,6 +1,6 @@
 package algs;
 
-import bot_interfaces.Algorithm;
+import bot.interfaces.Algorithm;
 import structures.UserInfo;
 
 public class HelloAlg implements Algorithm

@@ -1,9 +1,10 @@
-package console_bot;
+package console.bot;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import bot_interfaces.UserControl;
+
+import bot.interfaces.UserControl;
 import structures.UserInfo;
 
 public class CUserController implements UserControl

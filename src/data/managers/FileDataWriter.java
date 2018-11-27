@@ -1,9 +1,10 @@
-package dataManagers;
+package data.managers;
 
-import bot_interfaces.DataWriter;
 import java.io.*;
 import java.util.List;
 import java.util.Map;
+
+import bot.interfaces.DataWriter;
 
 public class FileDataWriter implements DataWriter {
 

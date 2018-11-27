@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import bot_interfaces.Algorithm;
-import bot_interfaces.DataCorrector;
-import bot_interfaces.DataManager;
-import bot_interfaces.DataSearcher;
+import bot.interfaces.Algorithm;
+import bot.interfaces.DataCorrector;
+import bot.interfaces.DataManager;
+import bot.interfaces.DataSearcher;
 import exceptions.UncorrectDataException;
 import structures.Meeting;
 import structures.UserInfo;
@@ -32,7 +32,13 @@ public class UserAlg implements Algorithm{
 	public void readMessage(String message) {
 
 		isReady = true;
-		switch (message.toLowerCase()) {
+		
+		if ("".equals(message)) {
+			isReady = false;
+			return;
+		}
+		
+		switch (message.toLowerCase().split(" ")[0]) {
 			case "will":
 				Meeting meet = meetingsMap.get(1);
 				MemberAlg asMember = new MemberAlg(meet, user, "Ok, I've recorded you.");
@@ -48,6 +54,8 @@ public class UserAlg implements Algorithm{
 						"info - show the information about meeting (name, time, place, etc.)\n" +
 						"will - record you to list\n";
 				break;
+			default:
+				isReady = false;	
 		}
 	}
 

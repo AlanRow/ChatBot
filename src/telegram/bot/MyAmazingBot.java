@@ -1,9 +1,11 @@
-package telegram_bot;
+package telegram.bot;
 
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
+
+import bot.interfaces.UserControl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,7 +16,6 @@ import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
-import bot_interfaces.UserControl;
 import exceptions.IllegalReadingException;
 import exceptions.IllegalSendingException;
 import exceptions.ManyTelBotsException;

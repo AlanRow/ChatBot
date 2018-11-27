@@ -4,11 +4,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import bot_interfaces.Algorithm;
-import bot_interfaces.DataCorrector;
-import bot_interfaces.DataManager;
-import bot_interfaces.DataReader;
-import bot_interfaces.DataSearcher;
+import bot.interfaces.Algorithm;
+import bot.interfaces.DataCorrector;
+import bot.interfaces.DataManager;
+import bot.interfaces.DataReader;
+import bot.interfaces.DataSearcher;
 import exceptions.UncorrectDataException;
 import exceptions.UnfoundedDataException;
 import structures.Meeting;
@@ -74,27 +74,32 @@ public class ListWriteAlg implements Algorithm {
 			return;
 		
 		//try {
-			main.readMessage(message);//основной алгоритм читает сообщение
+		main.readMessage(message);//основной алгоритм читает сообщение
+
+		if ("".equals(message)) {
+			isReady = false;
+			return;
+		}
 			
-			switch (message.toLowerCase()) {
-				//выводит информцию о встрече
-				case "info":
-					if (!info.equals(""))
-						answer = info;
-					else
-						answer = "Sorry, there isn't information about this meeting.";
-					break;
-					//выводит информацию о боте
-				case "/start":
-					answer = "This bot makes list of your meeting. If you want to know more, please write \"help\"";
-					break;
+		switch (message.toLowerCase().split(" ")[0]) {
+			//выводит информцию о встрече
+			case "info":
+				if (!info.equals(""))
+					answer = info;
+				else
+					answer = "Sorry, there isn't information about this meeting.";
+				break;
+				//выводит информацию о боте
+			case "/start":
+				answer = "This bot makes list of your meeting. If you want to know more, please write \"help\"";
+				break;
 				//показ списка команд
-				case "help":
-					answer = "Commands list:\n" +
-								"help - show this help-list\n" +
-								"info - show the information about meeting (name, time, place, etc.)\n";
-						break;
-			}
+			case "help":
+				answer = "Commands list:\n" +
+	   					 "help - show this help-list\n" +
+					     "info - show the information about meeting (name, time, place, etc.)\n";
+				break;
+		}
 	}
 
 	public boolean isReadyToGenerate() {

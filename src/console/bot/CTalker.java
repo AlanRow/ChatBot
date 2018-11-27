@@ -1,12 +1,13 @@
-package console_bot;
+package console.bot;
 
-import bot_interfaces.Algorithm;
-import bot_interfaces.MessageController;
 import structures.UserInfo;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+
+import bot.interfaces.Algorithm;
+import bot.interfaces.MessageController;
 
 public class CTalker implements MessageController
 {

@@ -11,7 +11,7 @@ import algs.HostAlg;
 import algs.ListWriteAlg;
 import algs.MemberAlg;
 import algs.UserAlg;
-import bot_interfaces.DataManager;
+import bot.interfaces.DataManager;
 import exceptions.UncorrectDataException;
 import exceptions.UnfoundedDataException;
 
@@ -19,14 +19,17 @@ import exceptions.UnfoundedDataException;
 //позволяя работать с конкретной встречей.
 public class Meeting {
 	private int meetingId;//уникален. Не должно быть двух встреч с одинаковым id.
+	private String password;//password for host-abilities, if this equals to null, then meeting will be public
 	private DataManager userList;
 	private List<MemberAlg> members;
 	private List<HostAlg> hosts;
-	private Map<Long, ListWriteAlg> subscribes; 
+	private Map<Long, ListWriteAlg> subscribes;
+	//private String info;
 	
 	public Meeting(int id, DataManager users) throws IOException, UncorrectDataException {
 		meetingId = id;
 		userList = users;
+		password = null;
 		subscribes = new HashMap<Long, ListWriteAlg>();
 		
 		members = new ArrayList<MemberAlg>();
@@ -52,6 +55,11 @@ public class Meeting {
 				members.add(member);
 			}
 		}
+	}
+	
+	public Meeting(int id, DataManager users, String setPassword) throws IOException, UncorrectDataException {
+		this(id, users);
+		password = setPassword;
 	}
 	
 	public int getId() {
@@ -93,6 +101,14 @@ public class Meeting {
 				System.out.println("algs is null!!!");;
 			subscribes.get(newMember.getUser().getId()).switchMainAlg(newMember);
 		}
+	}
+	
+	public boolean isPublic() {
+		return password == null;
+	}
+	
+	public boolean checkPassword(String checking) {
+		return isPublic() || (checking != null && checking.equals(password));
 	}
 	
 	public void subscribe(ListWriteAlg listUser) {

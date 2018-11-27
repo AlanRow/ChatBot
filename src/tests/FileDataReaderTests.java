@@ -4,8 +4,11 @@ import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
+
+import data.managers.FileDataReader;
+
 import java.io.*;
-import dataManagers.FileDataReader;
+
 import exceptions.UncorrectDataException;
 
 import java.util.ArrayList;

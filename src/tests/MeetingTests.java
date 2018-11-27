@@ -13,8 +13,8 @@ import org.junit.jupiter.api.Test;
 import algs.HostAlg;
 import algs.ListWriteAlg;
 import algs.MemberAlg;
-import bot_interfaces.DataManager;
-import dataManagers.VirtualDataManager;
+import bot.interfaces.DataManager;
+import data.managers.VirtualDataManager;
 import exceptions.UncorrectDataException;
 import exceptions.UnfoundedDataException;
 import structures.Meeting;
@@ -25,7 +25,7 @@ class MeetingTests {
 	@Test
 	void constructTest() throws IOException, UncorrectDataException {
 		File file = new File("testMeeting.txt");
-		Meeting meet = initMeeting(1, file, "");
+		Meeting meet = initMeeting(1, file, "", null);
 		
 		assertEquals(1, meet.getId());
 		assertEquals(0, meet.getUsers().size());
@@ -36,7 +36,7 @@ class MeetingTests {
 	@Test
 	void getMemberTest() throws IOException, UncorrectDataException {
 		File file = new File("testMeeting.txt");
-		Meeting meet = initMeeting(1, file, "$<0>:<Alan>:<1>:<member>\r\n$<1>:<Alex>:<1>:<host>\r\n$<2>:<Nick>:<2>:<member>\r\n");
+		Meeting meet = initMeeting(1, file, "$<0>:<Alan>:<1>:<member>\r\n$<1>:<Alex>:<1>:<host>\r\n$<2>:<Nick>:<2>:<member>\r\n", null);
 		
 		if (meet.getMember(new UserInfo(0, "Alan")) == null)
 			System.out.println("Oh no!");
@@ -52,7 +52,7 @@ class MeetingTests {
 	@Test
 	void addMemberTest() throws IOException, UncorrectDataException {
 		File file = new File("testMeeting.txt");
-		Meeting meet = initMeeting(1, file, "");
+		Meeting meet = initMeeting(1, file, "", null);
 		Map<Integer, Meeting> meets = new HashMap<Integer, Meeting>();
 		meets.put(1, meet);
 		ListWriteAlg alg = new ListWriteAlg(meets, new UserInfo(0, "Alan"), "");
@@ -68,7 +68,7 @@ class MeetingTests {
 	@Test
 	void removeMemberTest() throws IOException, UncorrectDataException, UnfoundedDataException {
 		File file = new File("testMeeting.txt");
-		Meeting meet = initMeeting(1, file, "$<0>:<Alan>:<1>:<member>\r\n$<1>:<Alex>:<1>:<host>\r\n$<2>:<Nick>:<2>:<member>\r\n");
+		Meeting meet = initMeeting(1, file, "$<0>:<Alan>:<1>:<member>\r\n$<1>:<Alex>:<1>:<host>\r\n$<2>:<Nick>:<2>:<member>\r\n", null);
 		
 		meet.removeMember(new UserInfo(0, "Alan"), "");
 		
@@ -80,7 +80,7 @@ class MeetingTests {
 	@Test
 	void appointAsHostTest() throws IOException, UncorrectDataException, UnfoundedDataException {
 		File file = new File("testMeeting.txt");
-		Meeting meet = initMeeting(1, file, "$<0>:<Alan>:<1>:<member>\r\n$<1>:<Alex>:<1>:<host>\r\n$<2>:<Nick>:<2>:<member>\r\n");
+		Meeting meet = initMeeting(1, file, "$<0>:<Alan>:<1>:<member>\r\n$<1>:<Alex>:<1>:<host>\r\n$<2>:<Nick>:<2>:<member>\r\n", null);
 		
 		meet.appointAsHost(new HostAlg(meet, new UserInfo(0, "Alan"), ""));
 		
@@ -92,7 +92,7 @@ class MeetingTests {
 	@Test
 	void relegateHostTest() throws IOException, UncorrectDataException, UnfoundedDataException {
 		File file = new File("testMeeting.txt");
-		Meeting meet = initMeeting(1, file, "$<0>:<Alan>:<1>:<member>\r\n$<1>:<Alex>:<1>:<host>\r\n$<2>:<Nick>:<2>:<member>\r\n");
+		Meeting meet = initMeeting(1, file, "$<0>:<Alan>:<1>:<member>\r\n$<1>:<Alex>:<1>:<host>\r\n$<2>:<Nick>:<2>:<member>\r\n", null);
 		
 		meet.relegateHost(new UserInfo(1, "Alex"), "");
 		
@@ -101,7 +101,23 @@ class MeetingTests {
 		file.delete();
 	}
 	
-	private Meeting initMeeting(int meetingId, File file, String data) throws IOException, UncorrectDataException {
+	@Test
+	void passwordTest() throws IOException, UncorrectDataException {
+		File file = new File("testMeeting.txt");
+		Meeting meet1 = initMeeting(1, file, "", null);
+		Meeting meet2 = initMeeting(2, file, "", "12345");
+		
+		assertEquals(true, meet1.isPublic());
+		assertEquals(false, meet2.isPublic());
+		assertEquals(true, meet1.checkPassword("wertfg"));
+		assertEquals(true, meet1.checkPassword(null));
+		assertEquals(false, meet2.checkPassword("wertfg"));
+		assertEquals(true, meet2.checkPassword("12345"));
+		
+		file.delete();
+	}
+	
+	private Meeting initMeeting(int meetingId, File file, String data, String password) throws IOException, UncorrectDataException {
 		file.delete();
 		file.createNewFile();
 		
@@ -111,8 +127,9 @@ class MeetingTests {
 			writer.flush();
 		}
 		DataManager manager = new VirtualDataManager(file.getName());
-		
-		return new Meeting(meetingId, manager);
+		if (password == null)
+			return new Meeting(meetingId, manager);
+		return new Meeting(meetingId, manager, password);
 	}
 
 }
