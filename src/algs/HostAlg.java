@@ -15,6 +15,11 @@ public class HostAlg extends MemberAlg {
 	}
 	
 	@Override
+	public String getMemberType() {
+		return "host";
+	}
+	
+	@Override
 	public void readMessage(String message) {
 		isReady = true;
 		
@@ -42,13 +47,14 @@ public class HostAlg extends MemberAlg {
 				
 				break;
 			case "dehost":
-			try {
-				meeting.relegateHost(user, "Now, you're not a host.");
-			} catch (IOException | UncorrectDataException ex) {
-			answer = "Sorry, the file-working failed...";
-			} catch (UnfoundedDataException ex) {
-			answer = "Sorry, I haven't found you in file...";
-			}
+				try {
+					meeting.relegateHost(user, "Now, you're not a host.");
+				} catch (IOException | UncorrectDataException ex) {
+					answer = "Sorry, the file-working failed...";
+				} catch (UnfoundedDataException ex) {
+					answer = "Sorry, I haven't found you in file...";
+				}
+				break;
 			case "help":
 				answer = "Commands list:\n" +
 						"help - show this help-list\n" +

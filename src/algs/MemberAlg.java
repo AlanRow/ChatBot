@@ -26,6 +26,10 @@ public class MemberAlg implements Algorithm {
 		return user;
 	}
 	
+	public String getMemberType() {
+		return "member";
+	}
+	
 	public void readMessage(String message) {
 		isReady = true;
 		

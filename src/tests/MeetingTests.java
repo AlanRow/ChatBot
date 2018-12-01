@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import algs.HostAlg;
 import algs.ListWriteAlg;
 import algs.MemberAlg;
+import algs.OwnerAlg;
 import bot.interfaces.DataManager;
 import data.managers.VirtualDataManager;
 import exceptions.UncorrectDataException;
@@ -61,6 +62,7 @@ class MeetingTests {
 		
 		meet.addMember(member, alg);
 		assertEquals(0, meet.getMember(new UserInfo(0, "Alan")).getUser().getId());
+		meet.addMember(member, null);
 		
 		file.delete();
 	}
@@ -84,7 +86,7 @@ class MeetingTests {
 		
 		meet.appointAsHost(new HostAlg(meet, new UserInfo(0, "Alan"), ""));
 		
-		assertEquals(true, meet.getMember( new UserInfo(0, "Alan")) instanceof HostAlg);
+		assertEquals(true, meet.getMember(new UserInfo(0, "Alan")) instanceof HostAlg);
 		
 		file.delete();
 	}
@@ -113,6 +115,68 @@ class MeetingTests {
 		assertEquals(true, meet1.checkPassword(null));
 		assertEquals(false, meet2.checkPassword("wertfg"));
 		assertEquals(true, meet2.checkPassword("12345"));
+		
+		file.delete();
+	}
+	
+	@Test
+	public void getMemberByNameTest() throws IOException, UncorrectDataException {
+		File file = new File("testMeeting.txt");
+		Meeting meet1 = initMeeting(1, file, "$<0>:<Alan>:<1>:<member>\r\n$<1>:<Alex>:<1>:<host>\r\n$<2>:<Nick>:<1>:<member>\r\n", null);
+		
+		assertEquals(new UserInfo(0, "Alan"), meet1.getMemberByName("Alan").getUser());
+		assertEquals(new UserInfo(1, "Alex"), meet1.getMemberByName("Alex").getUser());
+		assertNotEquals(new UserInfo(1, "Alex"), meet1.getMemberByName("Nick").getUser());
+		assertEquals(null, meet1.getMemberByName("Tim"));
+
+		file.delete();
+	}
+	
+	@Test
+	public void getHostByNameTest() throws IOException, UncorrectDataException {
+		File file = new File("testMeeting.txt");
+		Meeting meet1 = initMeeting(1, file, "$<0>:<Alan>:<1>:<member>\r\n$<1>:<Alex>:<1>:<host>\r\n$<2>:<Nick>:<1>:<member>\r\n", null);
+		
+		assertEquals( null, meet1.getHostByName("Alan"));
+		assertEquals(new UserInfo(1, "Alex"), meet1.getHostByName("Alex").getUser());
+
+		file.delete();
+	}
+	
+	@Test
+	public void setPasswordTest() throws IOException, UncorrectDataException {
+		File file = new File("testMeeting.txt");
+		Meeting meet1 = initMeeting(1, file, "", null);
+		
+		meet1.setPassword("12345");
+		
+		assertEquals(false, meet1.isPublic());
+		assertEquals(true, meet1.checkPassword("12345"));
+		
+		meet1.setPassword("none");
+
+		assertEquals(true, meet1.isPublic());
+		
+		file.delete();
+	}
+	
+	@Test
+	public void setOwnerTest() throws IOException, UncorrectDataException, UnfoundedDataException {
+		File file = new File("testMeeting.txt");
+		Meeting meet1 = initMeeting(1, file, "$<0>:<Alan>:<1>:<member>\r\n$<1>:<Alex>:<1>:<host>\r\n$<2>:<Nick>:<1>:<member>\r\n", null);
+		
+		assertEquals(null, meet1.getOwner());
+		
+		meet1.setOwner(new UserInfo(2, "Nick"));
+		
+		assertEquals(new UserInfo(2, "Nick"), meet1.getOwner().getUser());
+		assertEquals(true, meet1.getMember(new UserInfo(2, "Nick")) instanceof OwnerAlg);
+		
+		meet1.setOwner(new UserInfo(3, "Tim"));
+		
+		assertEquals(new UserInfo(3, "Tim"), meet1.getOwner().getUser());
+		assertEquals(false, meet1.getMember(new UserInfo(2, "Nick")) instanceof OwnerAlg);
+		assertEquals(true, meet1.getMember(new UserInfo(3, "Tim")) instanceof OwnerAlg);
 		
 		file.delete();
 	}
