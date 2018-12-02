@@ -99,6 +99,8 @@ public class ListWriteAlg implements Algorithm {
 	   					 "help - show this help-list\n" +
 					     "info - show the information about meeting (name, time, place, etc.)\n";
 				break;
+			default:
+				answer = "Sorry, I haven't understood you...";
 		}
 	}
 

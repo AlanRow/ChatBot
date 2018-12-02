@@ -28,13 +28,13 @@ public class OwnerAlg extends HostAlg {
 			return;
 		}
 		
-		String[] commands = message.toLowerCase().split(" ");
+		String[] commands = message.split(" ");
 		if (commands.length == 0) {
 			isReady = false;
 			return;
 		}
 			
-		switch (commands[0]) {
+		switch (commands[0].toLowerCase()) {
 		
 			case "sethost":
 				if (commands.length < 2 || commands[1] == null || commands[1] == "") {
@@ -64,7 +64,8 @@ public class OwnerAlg extends HostAlg {
 				}
 						
 				try {
-					meeting.appointAsHost(new HostAlg(meeting, user, "You've appointed as a host."));
+					meeting.appointAsHost(new HostAlg(meeting, willHost.getUser(), "You've appointed as a host."));
+					answer = "User <" + willHost.getUser().getName() + "> has appointed as a host.";
 				} catch (IOException | UncorrectDataException | UnfoundedDataException ex) {
 					answer = "Sorry, the file-working failed...";
 				}
@@ -125,21 +126,65 @@ public class OwnerAlg extends HostAlg {
 				
 			try {
 				meeting.setOwner(newOwner.getUser());
+				answer = "Ok, the user <"+ newOwner.getUser().getName() + "> has became owner.";
 			} catch (IOException | UncorrectDataException | UnfoundedDataException e) {
 				answer = "Sorry, the file-working failed...";
 			}
 			
 			break;
+			
+			case "setpswd":
+				if (commands.length < 2 || commands[1] == null || commands[1] == "") {
+					answer = "If you want to meke the meeting public then type <set none>.";
+					break;
+				}
+				
+				if (commands[1].toLowerCase().equals("none")) {
+					meeting.setPassword(null);
+					answer = "Ok, meeting is public.";
+					break;
+				}
+					
+				meeting.setPassword(commands[1]);
+				answer = "Ok, password is saved.";
+				break;
+				
+			case "setinfo":
+				if (commands.length < 2 || commands[1] == null || commands[1] == "") {
+					answer = "Type after <info> the description of meeting or <none> (if you want to clear the info)";
+					break;
+				}
+				
+				String newInfo = commands[1];
+
+				for (int i = 2; i < commands.length; i++)
+					newInfo += " " + commands[i];
+				
+				if (newInfo.toLowerCase().equals("none")) {
+					meeting.setInfo(null);
+					answer = "Description has cleared";
+					break;
+				}
+					
+				meeting.setInfo(newInfo);
+				answer = "Description has saved";
+				break;
 				
 			case "help":
 				answer = "Commands list:\n" +
 						"help - show this help-list\n" +
-						"info - show the information about meeting (name, time, place, etc.)\n" +
+				  /*no*/"info - show the information about meeting (name, time, place, etc.)\n" +
 						"show - show the list of meeting members\n" +
-						"dehost - if you want to refuse from hosting meeting\n";
+					/*no*/"exclude [username] - exclude some user from meeting\n"+
+						"dehost [username] - if you want to refuse somebody from hosting meeting\n" +
+					/*no*/"setpswd [password]- set the password of meeting. Type <set none> if you want to make the meeting public.\n" +
+					/*no*/"setinfo [info] - set information about meeting (name, time, place, etc.)\n" +
+						"sethost [username] - for adding some user to hosts of meeting\n"+
+						"delegate [username] - delegate yor ownership to some member or host\n";
 				break;
 				
 			default:
+				isReady = false;
 				super.readMessage(message);	
 		}
 	}

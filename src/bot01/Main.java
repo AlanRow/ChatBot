@@ -58,7 +58,7 @@ public class Main {
 		Meeting meet = null;
 		try {
 				meet = new Meeting(1, dataManager);
-		} catch (UncorrectDataException ex) {
+		} catch (UncorrectDataException | UnfoundedDataException ex) {
 			System.out.println("Something wrong with data: " + ex.getMessage());
 		} catch (IOException ex) {
 			System.out.println("Something wrong with file-working: " + ex.getMessage());

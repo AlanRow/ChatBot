@@ -5,6 +5,7 @@ import java.io.IOException;
 import bot.interfaces.Algorithm;
 import exceptions.UncorrectDataException;
 import exceptions.UnfoundedDataException;
+import exceptions.tryToRemoveOwnerException;
 import structures.Meeting;
 import structures.UserInfo;
 
@@ -30,6 +31,10 @@ public class MemberAlg implements Algorithm {
 		return "member";
 	}
 	
+	public Meeting getMeeting() {
+		return meeting;
+	}
+	
 	public void readMessage(String message) {
 		isReady = true;
 		
@@ -38,48 +43,43 @@ public class MemberAlg implements Algorithm {
 			return;
 		}
 		
-		String[] commands = message.toLowerCase().split(" ");
+		String[] commands = message.split(" ");
 		if (commands.length == 0) {
 			isReady = false;
 			return;
 		}
 			
-		switch (commands[0]) {
+		switch (commands[0].toLowerCase()) {
+		
 			case "will":
 				answer = "You've just been a member.";
 				break;
+				
+			case "info":
+				String info =  meeting.getInfo();
+				answer = (info != null && !info.equals("")) ? info : "Here isn't any information about this meeting....";
+				break;
+				
 			case "wont":
 			try {
 				meeting.removeMember(user, "Ok, I've struck off you.");
-			
+				answer = "Ok, I've struck off you.";
 			} catch (IOException | UncorrectDataException ex) {
 				answer = "Sorry, the file-working failed...";
 			} catch (UnfoundedDataException ex) {
 				answer = "Sorry, I haven't found you in file...";
+			} catch (tryToRemoveOwnerException ex) {
+				answer = "You try to remove owner of meeting.";
 			}
 				break;
-			case "host":
-				if (meeting.isPublic() || (commands.length > 1 && meeting.checkPassword(commands[1]))) {
-					try {
-						meeting.appointAsHost(new HostAlg(meeting, user, "You've been a host."));
-					} catch (IOException | UncorrectDataException ex) {
-						answer = "Sorry, the file-working failed...";
-					} catch (UnfoundedDataException e) {
-						answer = "Sorry, I haven't found you in file...";
-					}
-				} else if(commands.length == 1) {
-					answer = "This meeting isn't public. Please, type the password, if you want to become a host.";
-				} else {
-					answer = "The password is uncorrect.";
-				}
-				break;
+				
 			case "help":
 				answer = "Commands list:\n" +
 							"help - show this help-list\n" +
 							"info - show the information about meeting (name, time, place, etc.)\n" +
-							"wont - struck off you from list\n" +
-							"host [password] - for hosting this meeting\n";
+							"wont - struck off you from list\n";
 				break;
+				
 			default:
 				isReady = false;
 		}

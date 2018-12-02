@@ -9,6 +9,7 @@ import bot.interfaces.DataCorrector;
 import bot.interfaces.DataManager;
 import bot.interfaces.DataSearcher;
 import exceptions.UncorrectDataException;
+import exceptions.UnfoundedDataException;
 import structures.Meeting;
 import structures.UserInfo;
 
@@ -29,6 +30,10 @@ public class UserAlg implements Algorithm{
 		isReady = (!"".equals(startMessage));
 	}
 	
+	public UserInfo getUser() {
+		return user;
+	}
+	
 	public void readMessage(String message) {
 
 		isReady = true;
@@ -38,22 +43,53 @@ public class UserAlg implements Algorithm{
 			return;
 		}
 		
-		switch (message.toLowerCase().split(" ")[0]) {
+		String[] commands = message.split(" ");
+		if (commands.length == 0) {
+			isReady = false;
+			return;
+		}
+			
+		switch (commands[0].toLowerCase()) {
+			
 			case "will":
 				Meeting meet = meetingsMap.get(1);
-				MemberAlg asMember = new MemberAlg(meet, user, "Ok, I've recorded you.");
-				try {
-					meet.addMember(asMember, listAlg);
-				} catch (IOException | UncorrectDataException e) {
-					answer = "Sorry, the file-working failed.";
+				
+				if (meet.isPublic()) {
+					MemberAlg asMember = new MemberAlg(meet, user, "Ok, I've recorded you.");
+					try {
+						meet.addMember(asMember, listAlg);
+						answer = "Ok, I've recorded you.";
+					} catch (IOException | UncorrectDataException | UnfoundedDataException e) {
+						answer = "Sorry, the file-working failed.";
+					}
+				}
+				else {
+					if (commands.length < 2 || commands[1] == null || commands[1] == "") {
+						answer = "This meet isn't public. Please, type the password after <will>.";
+						break;
+					}
+					
+					if (meet.checkPassword(commands[1])) {
+						MemberAlg asMember = new MemberAlg(meet, user, "Ok, I've recorded you.");
+						try {
+							meet.addMember(asMember, listAlg);
+							answer = "Ok, I've recorded you.";
+						} catch (IOException | UncorrectDataException | UnfoundedDataException e) {
+							answer = "Sorry, the file-working failed.";
+						}
+					}
+					else
+						answer = "Sorry, the password is incorrect.";
 				}
 				break;
+				
 			case "help":
 				answer = "Commands list:\n" +
 						"help - show this help-list\n" +
-						"info - show the information about meeting (name, time, place, etc.)\n" +
-						"will - record you to list\n";
+						"will - join to public meeting\n" +
+						"will [password] - join to not-public meeting\n";
 				break;
+			
 			default:
 				isReady = false;	
 		}

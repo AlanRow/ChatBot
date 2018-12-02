@@ -18,13 +18,14 @@ import bot.interfaces.DataManager;
 import data.managers.VirtualDataManager;
 import exceptions.UncorrectDataException;
 import exceptions.UnfoundedDataException;
+import exceptions.tryToRemoveOwnerException;
 import structures.Meeting;
 import structures.UserInfo;
 
 class MeetingTests {
 
 	@Test
-	void constructTest() throws IOException, UncorrectDataException {
+	void constructTest() throws IOException, UncorrectDataException, UnfoundedDataException {
 		File file = new File("testMeeting.txt");
 		Meeting meet = initMeeting(1, file, "", null);
 		
@@ -35,7 +36,7 @@ class MeetingTests {
 	}
 
 	@Test
-	void getMemberTest() throws IOException, UncorrectDataException {
+	void getMemberTest() throws IOException, UncorrectDataException, UnfoundedDataException {
 		File file = new File("testMeeting.txt");
 		Meeting meet = initMeeting(1, file, "$<0>:<Alan>:<1>:<member>\r\n$<1>:<Alex>:<1>:<host>\r\n$<2>:<Nick>:<2>:<member>\r\n", null);
 		
@@ -51,7 +52,7 @@ class MeetingTests {
 	}
 
 	@Test
-	void addMemberTest() throws IOException, UncorrectDataException {
+	void addMemberTest() throws IOException, UncorrectDataException, UnfoundedDataException {
 		File file = new File("testMeeting.txt");
 		Meeting meet = initMeeting(1, file, "", null);
 		Map<Integer, Meeting> meets = new HashMap<Integer, Meeting>();
@@ -68,7 +69,7 @@ class MeetingTests {
 	}
 
 	@Test
-	void removeMemberTest() throws IOException, UncorrectDataException, UnfoundedDataException {
+	void removeMemberTest() throws IOException, UncorrectDataException, UnfoundedDataException, tryToRemoveOwnerException {
 		File file = new File("testMeeting.txt");
 		Meeting meet = initMeeting(1, file, "$<0>:<Alan>:<1>:<member>\r\n$<1>:<Alex>:<1>:<host>\r\n$<2>:<Nick>:<2>:<member>\r\n", null);
 		
@@ -104,7 +105,7 @@ class MeetingTests {
 	}
 	
 	@Test
-	void passwordTest() throws IOException, UncorrectDataException {
+	void passwordTest() throws IOException, UncorrectDataException, UnfoundedDataException {
 		File file = new File("testMeeting.txt");
 		Meeting meet1 = initMeeting(1, file, "", null);
 		Meeting meet2 = initMeeting(2, file, "", "12345");
@@ -120,7 +121,7 @@ class MeetingTests {
 	}
 	
 	@Test
-	public void getMemberByNameTest() throws IOException, UncorrectDataException {
+	public void getMemberByNameTest() throws IOException, UncorrectDataException, UnfoundedDataException {
 		File file = new File("testMeeting.txt");
 		Meeting meet1 = initMeeting(1, file, "$<0>:<Alan>:<1>:<member>\r\n$<1>:<Alex>:<1>:<host>\r\n$<2>:<Nick>:<1>:<member>\r\n", null);
 		
@@ -133,7 +134,7 @@ class MeetingTests {
 	}
 	
 	@Test
-	public void getHostByNameTest() throws IOException, UncorrectDataException {
+	public void getHostByNameTest() throws IOException, UncorrectDataException, UnfoundedDataException {
 		File file = new File("testMeeting.txt");
 		Meeting meet1 = initMeeting(1, file, "$<0>:<Alan>:<1>:<member>\r\n$<1>:<Alex>:<1>:<host>\r\n$<2>:<Nick>:<1>:<member>\r\n", null);
 		
@@ -144,7 +145,7 @@ class MeetingTests {
 	}
 	
 	@Test
-	public void setPasswordTest() throws IOException, UncorrectDataException {
+	public void setPasswordTest() throws IOException, UncorrectDataException, UnfoundedDataException {
 		File file = new File("testMeeting.txt");
 		Meeting meet1 = initMeeting(1, file, "", null);
 		
@@ -181,7 +182,18 @@ class MeetingTests {
 		file.delete();
 	}
 	
-	private Meeting initMeeting(int meetingId, File file, String data, String password) throws IOException, UncorrectDataException {
+
+	@Test
+	public void getAndSetInfoTest() throws IOException, UncorrectDataException, UnfoundedDataException {
+		File file = new File("testMeeting.txt");
+		Meeting meet = initMeeting(1, file, "", null);
+		
+		assertEquals(null, meet.getInfo());
+		meet.setInfo("OOP-practice at 16:10 in 514 classroom");
+		assertEquals("OOP-practice at 16:10 in 514 classroom", meet.getInfo());
+	}
+	
+	private Meeting initMeeting(int meetingId, File file, String data, String password) throws IOException, UncorrectDataException, UnfoundedDataException {
 		file.delete();
 		file.createNewFile();
 		
