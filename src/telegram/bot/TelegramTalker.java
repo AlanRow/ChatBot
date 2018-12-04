@@ -38,11 +38,13 @@ public class TelegramTalker implements MessageController {
 	}
 
 	//проверка наличия новых сообщений
+	@Override
 	public boolean areNewMessages() {
 		return !bot.checkPostIsEmpty(this);
 	}
 
 	//получение новых сообщений
+	@Override
 	public List<String> getNewMessages() {
 		try {
 			List<String> messages = bot.getPost(this);
@@ -55,16 +57,19 @@ public class TelegramTalker implements MessageController {
 	}
 
 	//получение алгоритма
+	@Override
 	public Algorithm getAlgorithm() {
 		return alg;
 	}
 
 	//получение пользователя
+	@Override
 	public UserInfo getUser() {
 		return user;
 	}
 
 	//сгенерировать аналогичного толкера для другого пользователя
+	@Override
 	public MessageController genererateSame(UserInfo another) {
 		return new TelegramTalker(another, alg.genererateSame(another), bot);
 	}

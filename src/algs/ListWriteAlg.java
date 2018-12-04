@@ -52,7 +52,7 @@ public class ListWriteAlg implements Algorithm {
 		this(meetings, user);
 		info = inform;
 	}
-	
+
 	public UserInfo getUser() {
 		return user;
 	}
@@ -66,6 +66,7 @@ public class ListWriteAlg implements Algorithm {
 	}
 	
 	//обработка пришедшего сообщения
+	@Override
 	public void readMessage(String message) {
 		
 		isReady = true;
@@ -122,6 +123,7 @@ public class ListWriteAlg implements Algorithm {
 		return answer;
 	}
 
+	@Override
 	public Algorithm genererateSame(UserInfo another) {
 		return new ListWriteAlg(meetingsMap, another);
 	}

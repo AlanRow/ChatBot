@@ -173,12 +173,12 @@ public class OwnerAlg extends HostAlg {
 			case "help":
 				answer = "Commands list:\n" +
 						"help - show this help-list\n" +
-				  /*no*/"info - show the information about meeting (name, time, place, etc.)\n" +
+						"info - show the information about meeting (name, time, place, etc.)\n" +
 						"show - show the list of meeting members\n" +
-					/*no*/"exclude [username] - exclude some user from meeting\n"+
+						"exclude [username] - exclude some user from meeting\n"+
 						"dehost [username] - if you want to refuse somebody from hosting meeting\n" +
-					/*no*/"setpswd [password]- set the password of meeting. Type <set none> if you want to make the meeting public.\n" +
-					/*no*/"setinfo [info] - set information about meeting (name, time, place, etc.)\n" +
+						"setpswd [password]- set the password of meeting. Type <set none> if you want to make the meeting public.\n" +
+						"setinfo [info] - set information about meeting (name, time, place, etc.)\n" +
 						"sethost [username] - for adding some user to hosts of meeting\n"+
 						"delegate [username] - delegate yor ownership to some member or host\n";
 				break;

@@ -19,6 +19,7 @@ public class FileDataWriter implements DataWriter {
 	}
 	
 	//writes all map to file in the next form: $<key>:<value1>:<value2>:...:<valueN>
+	@Override
 	public void writeAllData(Map<String, List<String>> data) throws IOException {
 		try (FileWriter writer = new FileWriter(file, false))
 		{
@@ -36,6 +37,7 @@ public class FileDataWriter implements DataWriter {
 		}
 	}
 
+	@Override
 	public void clearData() throws IOException {
 		try (FileWriter writer = new FileWriter(file))
 		{

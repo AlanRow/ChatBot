@@ -34,7 +34,8 @@ public class MemberAlg implements Algorithm {
 	public Meeting getMeeting() {
 		return meeting;
 	}
-	
+
+	@Override
 	public void readMessage(String message) {
 		isReady = true;
 		
@@ -85,15 +86,18 @@ public class MemberAlg implements Algorithm {
 		}
 	}
 
+	@Override
 	public boolean isReadyToGenerate() {
 		return isReady;
 	}
 
+	@Override
 	public String generateMessage() {
 		isReady = false;
 		return answer;
 	}
 
+	@Override
 	public Algorithm genererateSame(UserInfo another) {
 		return new MemberAlg(meeting, another, "");
 	}

@@ -33,7 +33,8 @@ public class UserAlg implements Algorithm{
 	public UserInfo getUser() {
 		return user;
 	}
-	
+
+	@Override
 	public void readMessage(String message) {
 
 		isReady = true;
@@ -95,16 +96,19 @@ public class UserAlg implements Algorithm{
 		}
 	}
 
+	@Override
 	public boolean isReadyToGenerate() {
 		return isReady;
 	}
 
+	@Override
 	public String generateMessage() {
 		isReady = false;
 		return answer;
 	}
 
 	//что с этим делать?
+	@Override
 	public Algorithm genererateSame(UserInfo another) {
 		return null;
 	}

@@ -46,17 +46,20 @@ public class VirtualDataManager extends DataManager{
 	}
 
 	//получает Map всех данных
+	@Override
 	public Map<String, List<String>> getAllData() {
 		return data;
 	}
 	
 	//writes to file data-map
+	@Override
 	public void writeAllData(Map<String, List<String>> data) throws IOException {
 		this.data = data;
 		updateData();
 	}
 
 	//return the pair of key-value data
+	@Override
 	public InfoPair getData(String key) throws UnfoundedDataException {
 		List<String> value = data.get(key);
 		if (value == null)
@@ -66,12 +69,14 @@ public class VirtualDataManager extends DataManager{
 	}
 
 	//очищает данные в файле и в Map'e
+	@Override
 	public void clearData() throws IOException {
 		data.clear();
 		updateData();
 	}
 
 	//убирает все данные по заданному ключу
+	@Override
 	public void removeData(String key) throws IOException {
 		data.remove(key);
 		updateData();

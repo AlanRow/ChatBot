@@ -24,6 +24,7 @@ public class FileDataReader implements DataReader {
 	}
 	
 	//метод вычитки всей информации из файла
+	@Override
 	public Map<String, List<String>> getAllData() throws IOException, UncorrectDataException {
 		
 		Map<String, List<String>> keyMap = new HashMap<String, List<String>>();
